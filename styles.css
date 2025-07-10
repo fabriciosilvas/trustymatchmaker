@@ -1,0 +1,305 @@
+:root {
+    --font-letter: #333366;
+    --primary-dark: #0F6CBF;
+    --secondary-light: #FFFFFF!important;
+    --secondary-color: #CED4DA!important;
+    --atention: rgb(249, 128, 18)
+}
+
+.navbar_custom {
+    padding-top: 0;
+    padding-bottom: 0;
+    box-shadow: none;
+    border-bottom: #dee2e6 1px solid;
+    align-items: stretch;
+}
+
+.container {
+    padding: 12px 0;
+    max-width: 700px;
+    margin: auto;
+}
+
+.header {
+    min-width: 100%;
+    height: 48px;
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+.header h1 {
+    font-size: 24px;
+    color: var(--secondary-light);
+}
+
+.center {
+    display: flex;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.cta {
+    
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 32px auto;
+    padding: 32px 0;
+    z-index: 1;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+}
+
+.h2_center {
+    margin-bottom: 24px;
+    text-align: center!important;
+}
+
+.cta p {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.cta_img {
+    margin-bottom: 16px;
+    width: 300px;
+    margin: 0;
+}
+
+.itensnav ul{
+    margin-bottom: 0!important;
+}
+
+
+.itensnav li {
+    height: 100%;
+}
+
+.custom_nav ul li a {
+	 color: var(--font-letter);
+	 text-decoration: none;
+	 display: flex;
+     height: 100%;
+     width: 100%;
+     justify-content: center;
+     align-items: center;
+}
+.custom_nav ul {
+    list-style: none;
+    display: flex;
+    height: 100%;
+    width: 100%;
+
+}
+.custom_nav {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.itensnav {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+}
+
+.content {
+    width: 100%;
+}
+
+.custom_nav a:hover{
+    background: var(--secondary-color);
+}
+
+.gap {
+    margin: 0 10px 0 10px;
+}
+
+.secaoatual {
+    border-bottom: 3px solid var(--primary-dark);
+}
+
+.custom_button {
+    background-color: var(--primary-dark);
+    color: var(--secondary-light);
+    border: none;
+    padding: 12px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.p_custom {
+    margin-block-end: 0!important;
+}
+
+.secondarynav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    max-width: 70%;
+    padding-inline-start: 0;
+}
+
+
+.secondarynav li a{
+    border: 1px solid var(--secondary-color);
+    color: var(--font-letter);
+    padding: 10px;
+    font-size: 14px;
+}
+
+.selected {
+    border: none!important;
+    background-color: var(--primary-dark)!important;
+    color: var(--secondary-light)!important;
+}
+
+.titulo_secao {
+    font-size: 20px;
+    color: var(--font-letter);
+}
+
+.secao_container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 32px;
+}
+
+.borda {
+    padding: 16px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+}
+
+.borda_bttm {
+    border-bottom: 1px solid var(--secondary-color);
+    padding-bottom: 8px;
+    width: 100%;
+}
+
+.pedido {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 16px;
+}
+
+.para_avaliar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 16px;
+}
+.para_avaliar h4 {
+    font-size: 16px;
+    color: var(--font-letter);
+    margin-bottom: 16px;
+}
+
+.pedido_i1 {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 16px;
+
+}
+
+.avaliar_i1 {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 16px;
+
+}
+
+.pedido_i1 img {
+    width: 32px;
+
+}
+
+.avaliar_i1 img {
+    width: 32px;
+
+}
+
+.pedido_i2 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-left: 16px;
+}
+
+.pedido_i2 h3 {
+    font-size: 16px;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+.pedido_i2 p {
+    font-size: 14px;
+    color: var(--font-letter);
+}
+
+.aceitar {
+    background-color: var(--primary-dark);
+    color: var(--secondary-light);
+    border: none;
+    padding: 0px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.avaliar {
+    background-color: var(--atention);
+    color: var(--secondary-light);
+    border: none;
+    padding: 0px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    
+}
+.recusar {
+    background-color: var(--secondary-color);
+    color: var(--font-letter);
+    border: none;
+    padding: 0px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.pedido .btn_ar{
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+    width: 100%;
+}
+
+
+
+.btn_ar button {
+    margin-right: 16px;
+    padding: 12px;
+    display: inline-block;
+    width: auto;
+    height: auto;
+    white-space: nowrap;
+}
+
+.none {
+    margin: 0;
+    color: #606770;
+}
+
+.margem {
+ margin: 32px auto;   
+}
