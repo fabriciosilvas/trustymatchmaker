@@ -52,8 +52,9 @@ function local_trustymatchmaker_extend_navigation_frontpage(navigation_node $fro
     );  
 }
 
-function local_trustymatchmaker_teste($output) {
-    echo $output->render_from_template('local_trustymatchmaker/pfl_nav', []);
+function local_trustymatchmaker_load_navbar_pfl() {
+    global $OUTPUT;
+    echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', []);
 }
 
 function local_trustymatchmaker_load_sections_pfl() {
@@ -82,27 +83,86 @@ function local_trustymatchmaker_load_description($output, $db, $user_id) {
 }
 
 function local_trustymatchmaker_load_interests($output, $db, $user_id) {
-    $nada = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Nada a mostrar."]);
+
+    $interests = $db->get_fieldset('tag','name', ['userid' => $user_id]);
+    
+    $nada = "";
+
+    if (count($interests) > 0) {
+        foreach ($interests as $interest) {
+            $nada .= $output->render_from_template('local_trustymatchmaker/pfl_interest', ['interesse' => $interest]);
+        }
+        
+    } else {
+        $nada = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Nada a mostrar."]);
+    }
+
+    $interesses = $output->render_from_template('local_trustymatchmaker/pfl_list_intesrests', [
+        'conteudo-html' => $nada
+    ]);
 
     $templatedata = ['section_name' => "Interesses",
-        'conteudohtml' => $nada];
+        'conteudohtml' => $interesses];
     echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
 }
 
 function local_trustymatchmaker_load_user_info($output, $db, $user_id) {
-    $nada = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Nada a mostrar."]);
+    $cidade = $db->get_field('user', 'city', ['id' => $user_id]);
+    $pais = $db->get_field('user', 'country', ['id' => $user_id]);
+    $departamento = $db->get_field('user', 'department', ['id' => $user_id]);
 
-    $templatedata = ['section_name' => "Apresentação",
-        'conteudohtml' => $nada];
-    echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
+    $apresentacao = "";
+
+    if (!empty($cidade)) {
+        if (!empty($pais)) {
+            $cidade_pais = "$cidade, $pais";
+            $apresentacao .= $output->render_from_template('local_trustymatchmaker/apresentacao_pfl', [
+            'titulo' => "Cidade",
+            'conteudo' => $cidade_pais
+        ]);
+        } else {
+            $apresentacao .= $output->render_from_template('local_trustymatchmaker/apresentacao_pfl', [
+                'titulo' => "Cidade",
+                'conteudo' => $cidade
+            ]);
+        
+        }
+    } else {
+        if (!empty($pais)) {
+            $apresentacao .= $output->render_from_template('local_trustymatchmaker/apresentacao_pfl', [
+                'titulo' => "País",
+                'conteudo' => $pais
+            ]);
+        }
+    }
+
+        
+    if (!empty($departamento)) {
+        $apresentacao .= $output->render_from_template('local_trustymatchmaker/apresentacao_pfl', [
+            'titulo' => "Departamento",
+            'conteudo' => $departamento
+        ]);
+    }
+
+    if (empty($apresentacao)) {
+        $paragrafo = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Nada a mostrar."]);
+
+        $templatedata = ['section_name' => "Apresentação",
+        'conteudohtml' => $paragrafo];
+        echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
+    } else {
+        $templatedata = ['section_name' => "Apresentação",
+        'conteudohtml' => $apresentacao];
+        echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
+    }
+    
 }
 
 function local_trustymatchmaker_load_trust_score($output, $db, $user_id) {
     $paragrafo = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Usuário ainda não avaliado."]);
 
-
-
     $templatedata = ['section_name' => "Índice de confiança",
     'conteudohtml' => $paragrafo];
     echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
 }
+

@@ -96,7 +96,24 @@ $templatedata = ['section_name' => "Para avaliar",
     'conteudohtml' => $nada];
 echo $OUTPUT->render_from_template('local_trustymatchmaker/section', $templatedata);
 
-// 6. definir o rodapé da página
+/*
+$command = escapeshellcmd("python3 " . __DIR__ . "/teste.py");
+$output = shell_exec($command);
+
+$lista = json_decode($output, true);
+
+if (is_array($lista)) {
+    echo html_writer::tag('p', 'Lista retornada do Python:');
+    echo html_writer::start_tag('ul');
+    foreach ($lista as $item) {
+        echo html_writer::tag('li', htmlspecialchars($item));
+    }
+    echo html_writer::end_tag('ul');
+} else {
+    echo html_writer::tag('p', 'Erro ao processar dados do Python.');
+}
+*/
+
 
 
 echo $OUTPUT->footer();

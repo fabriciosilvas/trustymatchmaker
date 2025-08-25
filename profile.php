@@ -83,9 +83,20 @@ $paginaAtual = [
     'perfil' => true
 ];
 
+$userpic = core_user::get_profile_picture($USER, $context, ['size' => 100]);
+$url = $userpic->get_url($PAGE);
+$hasPicture = $DB->get_field('user', 'picture', ['id' => $USER->id]);
+
+if (!$hasPicture) {
+    $url = core_user::get_initials($USER);
+    $imagem = $OUTPUT->render_from_template('local_trustymatchmaker/inicial_pfl', ['user-initials' => $url]);
+} else {
+    $imagem = $OUTPUT->render_from_template('local_trustymatchmaker/imagem_pfl', ['link' => $url]);
+}
+
 echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav', $paginaAtual);
 
-$imagem = $OUTPUT->render_from_template('local_trustymatchmaker/inicial_pfl', []);
+
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
     'imagem_perfil' => $imagem,
@@ -94,10 +105,7 @@ echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
 
 //echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', []);
 
-local_trustymatchmaker_teste($OUTPUT);
-
-
-
+local_trustymatchmaker_load_navbar_pfl();
 local_trustymatchmaker_load_sections_pfl();
 
 // 6. definir o rodapé da página

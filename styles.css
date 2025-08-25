@@ -218,6 +218,29 @@
 
 }
 
+.titulo {
+    font-weight: 700;
+    margin-bottom: 0px!important;
+}
+
+.interest {
+    display: flex;
+    flex-wrap: wrap;   /* permite quebrar para a próxima linha */
+    gap: 1rem!important;         /* espaço entre itens */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.interest li {
+    border-radius: 0.5rem;
+    font-weight: 700;
+    text-align: center;
+    font-size: 100%;
+    padding: 0.3rem 0.3rem!important;
+    white-space: nowrap; /* impede que o texto quebre */
+}
+
 .pedido_i1 img {
     width: 32px;
 
