@@ -56,30 +56,50 @@ else {
     redirect(new moodle_url('/login/index.php'));
 }
 
+$userid = optional_param('id', $USER->id, PARAM_INT); // User id.
+
+if (!($DB->record_exists('user', ['id' => $userid]))) {
+    redirect(new moodle_url('/local/trustymatchmaker/index.php'));
+}
+
+$user = $DB->get_record('user', ['id' => $userid]);
+
 $context = context_system::instance();
 $PAGE->set_context($context);
 
+// 3. Setar o url
+
+$PAGE->set_url(new moodle_url('/local/trustymatchmaker/friends.php'));
+
+//  4. setar o layout da página
+$PAGE->set_pagelayout('standard');
+
+// 4.1 Definir o título da página
+$PAGE->set_title(get_string('pluginname', 'local_trustymatchmaker'));
+
+// 4.2 Definir o título da página
+$PAGE->set_heading(get_string('pluginname', 'local_trustymatchmaker'));
+
+// 5. definir o cabeçalho da página
+echo $OUTPUT->header();
+
+
+//$templatedata = ['usergreeting' => $usergreeting];
+//echo $OUTPUT->render_from_template('local_trustymatchmaker/greeting_message', $templatedata);
 
 $paginaAtual = [
     'perfil' => true
 ];
 
 $templateContext = [
-    'linkInfo' => '/local/trustymatchmaker/profile.php',
+    'linkInfo' => '/local/trustymatchmaker/user.php?id='.$userid,
     'linkMedals' => '#',
-    'linkFriends' => '/local/trustymatchmaker/friends.php',
+    'linkFriends' => '/local/trustymatchmaker/friends.php?id='.$userid,
     'linkColaboratores' => '#',
-    'info' => true
+    'friends' => true
 ];
 
-$PAGE->set_url(new moodle_url('/local/trustymatchmaker/profile.php'));
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title(get_string('pluginname', 'local_trustymatchmaker'));
-$PAGE->set_heading(get_string('pluginname', 'local_trustymatchmaker'));
-
-echo $OUTPUT->header();
-
-$imagem = local_trustymatchmaker_load_profile_picture($USER, $context, $PAGE);
+$imagem = local_trustymatchmaker_load_profile_picture($user, $context, $PAGE);
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav', $paginaAtual);
 
@@ -87,13 +107,18 @@ echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav', $paginaAtua
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
     'imagem_perfil' => $imagem,
-    'username' => fullname($USER)
+    'username' => fullname($user)
 ]);
 
 //echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', []);
 
 local_trustymatchmaker_load_navbar_pfl($templateContext);
-local_trustymatchmaker_load_sections_pfl($USER);
 
+if ($userid == $USER->id) {
+    local_trustymatchmaker_load_sections_friends($user);
+} else {
+    local_trustymatchmaker_load_sections_friends($user, true);
+
+}
 // 6. definir o rodapé da página
 echo $OUTPUT->footer();

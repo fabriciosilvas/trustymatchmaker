@@ -52,17 +52,32 @@ function local_trustymatchmaker_extend_navigation_frontpage(navigation_node $fro
     );  
 }
 
-function local_trustymatchmaker_load_navbar_pfl() {
-    global $OUTPUT;
-    echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', []);
+function local_trustymatchmaker_load_profile_picture($user, $context, $page) {
+    global $DB, $OUTPUT;
+
+    $userpic = core_user::get_profile_picture($user, $context, ['size' => 100]);
+    $url = $userpic->get_url($page);
+    $hasPicture = $DB->get_field('user', 'picture', ['id' => $user->id]);
+
+    if (!$hasPicture) {
+        $url = core_user::get_initials($user);
+        return $OUTPUT->render_from_template('local_trustymatchmaker/inicial_pfl', ['user-initials' => $url]);
+    } else {
+        return $OUTPUT->render_from_template('local_trustymatchmaker/imagem_pfl', ['link' => $url]);
+    }
 }
 
-function local_trustymatchmaker_load_sections_pfl() {
-    global $DB, $USER, $OUTPUT;
-    local_trustymatchmaker_load_description($OUTPUT, $DB, $USER->id);
-    local_trustymatchmaker_load_user_info($OUTPUT, $DB, $USER->id);
-    local_trustymatchmaker_load_interests($OUTPUT, $DB, $USER->id);
-    local_trustymatchmaker_load_trust_score($OUTPUT, $DB, $USER->id);
+function local_trustymatchmaker_load_navbar_pfl($pagina) {
+    global $OUTPUT;
+    echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', $pagina);
+}
+
+function local_trustymatchmaker_load_sections_pfl($user) {
+    global $DB, $OUTPUT;
+    local_trustymatchmaker_load_description($OUTPUT, $DB, $user->id);
+    local_trustymatchmaker_load_user_info($OUTPUT, $DB, $user->id);
+    local_trustymatchmaker_load_interests($OUTPUT, $DB, $user->id);
+    local_trustymatchmaker_load_trust_score($OUTPUT, $DB, $user->id);
 }
 
 function local_trustymatchmaker_load_description($output, $db, $user_id) {
@@ -163,6 +178,38 @@ function local_trustymatchmaker_load_trust_score($output, $db, $user_id) {
 
     $templatedata = ['section_name' => "Índice de confiança",
     'conteudohtml' => $paragrafo];
+    echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
+}
+
+function local_trustymatchmaker_load_sections_friends($user, $otheruser = false) {
+    global $DB, $OUTPUT;
+    if (!$otheruser) {
+        local_trustymatchmaker_load_my_friends_list($OUTPUT, $DB, $user->id);
+    }
+}
+
+function local_trustymatchmaker_load_my_friends_list($output, $db, $user_id) {
+    $contacts = $db->get_records_sql(
+    'SELECT *
+    FROM {message_contacts}
+    WHERE userid = :userid1 OR contactid = :userid2',
+    ['userid1' => $user_id, 'userid2' => $user_id]
+    );
+
+    foreach ($contacts as $c) {
+        if ($c->userid == $user_id) {
+            $friendid = $c->contactid;
+        } else {
+            $friendid = $c->userid;
+        }
+        $friend = $db->get_record('user', ['id' => $friendid]);
+        echo fullname($friend) . "<br>";
+    }
+
+    $nada = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Nada a mostrar."]);
+
+    $templatedata = ['section_name' => "Lista de amigos",
+        'conteudohtml' => $nada];
     echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
 }
 
