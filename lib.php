@@ -52,18 +52,24 @@ function local_trustymatchmaker_extend_navigation_frontpage(navigation_node $fro
     );  
 }
 
-function local_trustymatchmaker_load_profile_picture($user, $context, $page) {
+function local_trustymatchmaker_load_profile_picture($user, $context, $page, $size = 100) {
     global $DB, $OUTPUT;
 
-    $userpic = core_user::get_profile_picture($user, $context, ['size' => 100]);
+    $userpic = core_user::get_profile_picture($user, $context, ['size' => $size]);
     $url = $userpic->get_url($page);
     $hasPicture = $DB->get_field('user', 'picture', ['id' => $user->id]);
 
     if (!$hasPicture) {
         $url = core_user::get_initials($user);
-        return $OUTPUT->render_from_template('local_trustymatchmaker/inicial_pfl', ['user-initials' => $url]);
+        if ($size == 50) {
+            return $OUTPUT->render_from_template('local_trustymatchmaker/inicial_pfl', ['user-initials' => $url, 's50' => true]);
+        }
+
+        return $OUTPUT->render_from_template('local_trustymatchmaker/inicial_pfl', ['user-initials' => $url, 's100' => true]);
+
+
     } else {
-        return $OUTPUT->render_from_template('local_trustymatchmaker/imagem_pfl', ['link' => $url]);
+        return $OUTPUT->render_from_template('local_trustymatchmaker/imagem_pfl', ['link' => $url, 'size' => $size]);
     }
 }
 
@@ -188,7 +194,7 @@ function local_trustymatchmaker_load_sections_friends($user, $otheruser = false)
     }
 }
 
-function local_trustymatchmaker_load_my_friends_list($output, $db, $user_id) {
+function local_trustymatchmaker_get_user_friends($db, $user_id) {
     $contacts = $db->get_records_sql(
     'SELECT *
     FROM {message_contacts}
@@ -196,20 +202,115 @@ function local_trustymatchmaker_load_my_friends_list($output, $db, $user_id) {
     ['userid1' => $user_id, 'userid2' => $user_id]
     );
 
+    $friendList = [];
+
     foreach ($contacts as $c) {
         if ($c->userid == $user_id) {
             $friendid = $c->contactid;
         } else {
             $friendid = $c->userid;
         }
-        $friend = $db->get_record('user', ['id' => $friendid]);
-        echo fullname($friend) . "<br>";
+        //$friend = $db->get_record('user', ['id' => $friendid]);
+        $friendList[] = $friendid;
     }
 
-    $nada = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Nada a mostrar."]);
+    return $friendList;
+}
+
+function local_trustymatchmaker_load_user_friends($output, $db, $user_id) {
+    global $USER, $PAGE;
+    $contacts = local_trustymatchmaker_get_user_friends($db, $user_id);
+    $my_friends = local_trustymatchmaker_get_user_friends($db, $USER->id);
+    
+    $mutualFriendList = array_intersect($contacts, $my_friends);
+
+    //$my_friends[] = $USER->id;
+    //$friendList = array_diff($contacts, $my_friends);
+    $mutualFriends = "";
+    //$otherFriends = "";
+
+    foreach ($mutualFriendList as $friendid) {
+        $friend = $db->get_record('user', ['id' => $friendid]);
+
+        $firendProfile = new moodle_url('/local/trustymatchmaker/user.php', ['id' => $friend->id]);
+        $friendName = fullname($friend);
+        $friendProfilePicture = local_trustymatchmaker_load_profile_picture($friend, context_system::instance(), $PAGE, 50);
+        $mutualFriends .= $output->render_from_template('local_trustymatchmaker/mutual_friend', [
+            'profile-link' => $firendProfile,
+            'friend-name' => $friendName,
+            'profile-picture' => $friendProfilePicture
+        ]);
+        
+    }
+
+    if (!empty($mutualFriends)) {
+        $templatedata = ['section_name' => "Amigos em comum",
+        'conteudohtml' => $mutualFriends];
+        echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
+    }
+
+    $mutualFriendList[] = $USER->id;
+
+    foreach ($contacts as $friendid) {
+        $friend = $db->get_record('user', ['id' => $friendid]);
+        $firendProfile = new moodle_url('/local/trustymatchmaker/user.php', ['id' => $friend->id]);
+        $friendName = fullname($friend);
+        $friendProfilePicture = local_trustymatchmaker_load_profile_picture($friend, context_system::instance(), $PAGE, 50);
+
+        if (in_array($friendid, $mutualFriendList)) {
+            $otherFriends .= $output->render_from_template('local_trustymatchmaker/mutual_friend', [
+            'profile-link' => $firendProfile,
+            'friend-name' => $friendName,
+            'profile-picture' => $friendProfilePicture
+        ]);
+        }
+        else {
+            $otherFriends .= $output->render_from_template('local_trustymatchmaker/other_friend', [
+            'profile-link' => $firendProfile,
+            'friend-name' => $friendName,
+            'profile-picture' => $friendProfilePicture
+        ]);
+        }
+        
+        
+    }
+
+    if (empty($otherFriends)) {
+        $otherFriends = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Usuário não adicionou nenhum amigo."]);
+    }
+    $templatedata = ['section_name' => "Lista de amigos",
+        'conteudohtml' => $otherFriends];
+    echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
+
+    
+}
+
+
+function local_trustymatchmaker_load_my_friends_list($output, $db, $user_id) {
+    global $PAGE;
+    $contacts = local_trustymatchmaker_get_user_friends($db, $user_id);
+
+    $friendList = "";
+
+    foreach ($contacts as $friendid) {
+        $friend = $db->get_record('user', ['id' => $friendid]);
+        $firendProfile = new moodle_url('/local/trustymatchmaker/user.php', ['id' => $friend->id]);
+        $friendName = fullname($friend);
+        $friendProfilePicture = local_trustymatchmaker_load_profile_picture($friend, context_system::instance(), $PAGE, 50);
+        $friendList .= $output->render_from_template('local_trustymatchmaker/friend', [
+            'profile-link' => $firendProfile,
+            'friend-name' => $friendName,
+            'profile-picture' => $friendProfilePicture
+        ]);
+        
+    }
+
+    if (empty($friendList)) {
+        $friendList = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Usuário não adicionou nenhum amigo."]);
+    }
 
     $templatedata = ['section_name' => "Lista de amigos",
-        'conteudohtml' => $nada];
+        'conteudohtml' => $friendList];
     echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
 }
 

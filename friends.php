@@ -117,7 +117,7 @@ local_trustymatchmaker_load_navbar_pfl($templateContext);
 if ($userid == $USER->id) {
     local_trustymatchmaker_load_sections_friends($user);
 } else {
-    local_trustymatchmaker_load_sections_friends($user, true);
+    local_trustymatchmaker_load_user_friends($OUTPUT, $DB, $userid);
 
 }
 // 6. definir o rodapé da página
