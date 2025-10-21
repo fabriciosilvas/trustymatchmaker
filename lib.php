@@ -109,13 +109,22 @@ function local_trustymatchmaker_load_description($output, $db, $user_id) {
 
 function local_trustymatchmaker_load_interests($output, $db, $user_id) {
 
-    $interests = $db->get_fieldset('tag','name', ['userid' => $user_id]);
+    //$interests = $db->get_fieldset('tag','name', ['userid' => $user_id]);
+
+     $sql = 'SELECT DISTINCT t.id, t.name
+        FROM {tag} t
+        JOIN {tag_instance} ti ON t.id = ti.tagid
+        WHERE ti.itemid = :userid';
+
+    $params = ['userid' => $user_id];
+
+    $interests = $db->get_records_sql($sql, $params);
     
     $nada = "";
 
     if (count($interests) > 0) {
         foreach ($interests as $interest) {
-            $nada .= $output->render_from_template('local_trustymatchmaker/pfl_interest', ['interesse' => $interest]);
+            $nada .= $output->render_from_template('local_trustymatchmaker/pfl_interest', ['interesse' => $interest->name]);
         }
         
     } else {
