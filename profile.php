@@ -68,7 +68,7 @@ $templateContext = [
     'linkInfo' => '/local/trustymatchmaker/profile.php',
     'linkMedals' => '#',
     'linkFriends' => '/local/trustymatchmaker/friends.php',
-    'linkColaboratores' => '#',
+    'linkColaboratores' => '/local/trustymatchmaker/collaborators.php',
     'info' => true
 ];
 

@@ -73,9 +73,13 @@ function local_trustymatchmaker_load_profile_picture($user, $context, $page, $si
     }
 }
 
-function local_trustymatchmaker_load_navbar_pfl($pagina) {
+function local_trustymatchmaker_load_navbar_pfl($pagina, $show_collaborators = true) {
     global $OUTPUT;
-    echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', $pagina);
+    if ($show_collaborators) {
+        echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', $pagina);
+    } else {
+        echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav_wo_collaborator', $pagina);
+    }
 }
 
 function local_trustymatchmaker_load_sections_pfl($user) {
@@ -220,6 +224,66 @@ function local_trustymatchmaker_get_user_friends($db, $user_id) {
     }
 
     return $friendList;
+}
+
+function local_trustymatchmaker_get_user_collaborators($db, $user_id) {
+   $collaborators = $db->get_records_sql(
+    'SELECT u.*
+     FROM {collaborators} col
+     JOIN {user} u ON (u.id = col.userid OR u.id = col.collaboratorid)
+     WHERE :userid1 IN (col.userid, col.collaboratorid)
+       AND u.id <> :userid2
+     ORDER BY u.firstname ASC, u.lastname ASC',
+    [
+        'userid1' => $user_id, 
+        'userid2' => $user_id
+    ]
+    );
+
+    $collaborators_id = [];
+
+    foreach ($collaborators as $c) {
+        if ($c->userid == $user_id) {
+            $collaborator = $c->id;
+        } else {
+            $collaborator = $c->id;
+        }
+        $collaborators_id[] = $collaborator;
+    }
+
+    return $collaborators_id;
+}
+
+function local_trustymatchmaker_load_sections_collaborators($user) {
+    global $DB, $OUTPUT, $PAGE;
+
+    $collaborators = local_trustymatchmaker_get_user_collaborators($DB, $user->id);
+
+    $collaboratorList = "";
+
+    foreach ($collaborators as $collaboratorid) {
+        $collaborator = $DB->get_record('user', ['id' => $collaboratorid]);
+
+        $collaboratorProfile = new moodle_url('/local/trustymatchmaker/user.php', ['id' => $collaboratorid]);
+        $collaboratorName = fullname($collaborator);
+        $collaboratorProfilePicture = local_trustymatchmaker_load_profile_picture($collaborator, context_system::instance(), $PAGE, 50);
+        $collaboratorList .= $OUTPUT->render_from_template('local_trustymatchmaker/collaborator', [
+            'profile-link' => $collaboratorProfile,
+            'collaborator-name' => $collaboratorName,
+            'profile-picture' => $collaboratorProfilePicture
+        ]);
+        
+    }
+
+    if (empty($collaboratorList)) {
+        $collaboratorList = $OUTPUT->render_from_template('local_trustymatchmaker/nada', ['texto' => "Você não possui colaboradores."]);
+    }
+    $templatedata = ['section_name' => "Colaboradores",
+        'conteudohtml' => $collaboratorList];
+    echo $OUTPUT->render_from_template('local_trustymatchmaker/section', $templatedata);  
+
+
+    
 }
 
 function local_trustymatchmaker_load_user_friends($output, $db, $user_id) {

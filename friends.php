@@ -91,14 +91,6 @@ $paginaAtual = [
     'perfil' => true
 ];
 
-$templateContext = [
-    'linkInfo' => '/local/trustymatchmaker/user.php?id='.$userid,
-    'linkMedals' => '#',
-    'linkFriends' => '/local/trustymatchmaker/friends.php?id='.$userid,
-    'linkColaboratores' => '#',
-    'friends' => true
-];
-
 $imagem = local_trustymatchmaker_load_profile_picture($user, $context, $PAGE);
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav', $paginaAtual);
@@ -112,11 +104,21 @@ echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
 
 //echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', []);
 
-local_trustymatchmaker_load_navbar_pfl($templateContext);
+$templateContext = [
+    'linkInfo' => '/local/trustymatchmaker/user.php?id='.$userid,
+    'linkMedals' => '#',
+    'linkFriends' => '/local/trustymatchmaker/friends.php?id='.$userid,
+    'friends' => true,
+];
 
 if ($userid == $USER->id) {
+    $templateContext['linkColaboratores'] = '/local/trustymatchmaker/collaborators.php';
+
+    local_trustymatchmaker_load_navbar_pfl($templateContext);
     local_trustymatchmaker_load_sections_friends($user);
+
 } else {
+    local_trustymatchmaker_load_navbar_pfl($templateContext, false);
     local_trustymatchmaker_load_user_friends($OUTPUT, $DB, $userid);
 
 }
