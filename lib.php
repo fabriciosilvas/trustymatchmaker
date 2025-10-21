@@ -196,21 +196,26 @@ function local_trustymatchmaker_load_sections_friends($user, $otheruser = false)
 
 function local_trustymatchmaker_get_user_friends($db, $user_id) {
     $contacts = $db->get_records_sql(
-    'SELECT *
-    FROM {message_contacts}
-    WHERE userid = :userid1 OR contactid = :userid2',
-    ['userid1' => $user_id, 'userid2' => $user_id]
+    'SELECT u.*
+     FROM {message_contacts} mc
+     JOIN {user} u ON (u.id = mc.contactid OR u.id = mc.userid)
+     WHERE :userid1 IN (mc.userid, mc.contactid)
+       AND u.id <> :userid2
+     ORDER BY u.firstname ASC, u.lastname ASC',
+    [
+        'userid1' => $user_id, 
+        'userid2' => $user_id
+    ]
     );
 
     $friendList = [];
 
     foreach ($contacts as $c) {
         if ($c->userid == $user_id) {
-            $friendid = $c->contactid;
+            $friendid = $c->id;
         } else {
-            $friendid = $c->userid;
+            $friendid = $c->id;
         }
-        //$friend = $db->get_record('user', ['id' => $friendid]);
         $friendList[] = $friendid;
     }
 
