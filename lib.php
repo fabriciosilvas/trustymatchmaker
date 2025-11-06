@@ -169,7 +169,6 @@ function local_trustymatchmaker_load_user_info($output, $db, $user_id) {
             ]);
         }
     }
-
         
     if (!empty($departamento)) {
         $apresentacao .= $output->render_from_template('local_trustymatchmaker/apresentacao_pfl', [
@@ -188,8 +187,7 @@ function local_trustymatchmaker_load_user_info($output, $db, $user_id) {
         $templatedata = ['section_name' => "Apresentação",
         'conteudohtml' => $apresentacao];
         echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
-    }
-    
+    } 
 }
 
 function local_trustymatchmaker_load_trust_score($output, $db, $user_id) {
@@ -346,8 +344,6 @@ function local_trustymatchmaker_load_user_friends($output, $db, $user_id) {
             'profile-picture' => $friendProfilePicture
         ]);
         }
-        
-        
     }
 
     if (empty($otherFriends)) {
@@ -356,8 +352,6 @@ function local_trustymatchmaker_load_user_friends($output, $db, $user_id) {
     $templatedata = ['section_name' => "Lista de amigos",
         'conteudohtml' => $otherFriends];
     echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
-
-    
 }
 
 function local_trustymatchmaker_load_my_friends_list($output, $db, $user_id) {
@@ -418,7 +412,10 @@ function local_trustymatchmaker_load_static_medals_grid($user) {
         ],
     ];
     
-    // 2. Concessões Falsas (Quem deu as medalhas)
+    // 2. Concessões
+
+    // Concessões estáticas exemplos
+    /*
     $wendell = $DB->get_record('user', ['username' => 'wendell'], 'id, firstname, lastname');
     $maria = $DB->get_record('user', ['username' => 'maria'], 'id, firstname, lastname');
 
@@ -430,7 +427,17 @@ function local_trustymatchmaker_load_static_medals_grid($user) {
         'ouvir' => [$wendell],
         'cordial' => [$maria],
     ];
-
+    */
+    $admin_user = $DB->get_record('user', ['id' => 2]);
+    $concessoes = [];
+    
+    if ($admin_user) {
+        $concessoes = [
+            'empatia' => [$admin_user, $admin_user],
+            'ouvir' => [$admin_user],
+            'cordial' => [$admin_user],
+        ];
+    }
     // --- FIM DOS DADOS ESTÁTICOS ---
 
     $grid_html = "";
@@ -439,17 +446,20 @@ function local_trustymatchmaker_load_static_medals_grid($user) {
     // 1. Renderizar cada ícone E seu respectivo popup
     foreach ($medals_data as $key => $medal) {
         
-        $givers = $concessoes[$key];
+        $givers = isset($concessoes[$key]) ? $concessoes[$key] : [];
 
-        // --- Preparar dados para o POPUP (E FILTRAR) ---
-        $issuers_list_data = []; // Lista final de concedentes
+        // --- Preparar dados para o POPUP ---
+        $issuers_list_data = [];
         foreach ($givers as $issuer) {
             
-            // A verificação que impede a auto-concessão
+            // ==========================================================
+            // FILTRO DESATIVADO PARA DEMONSTRAÇÃO
+            /*
             if ($issuer->id == $user->id) {
-                continue;
+                continue; // Pula o próprio usuário
             }
-
+            */
+            // ==========================================================
             $issuer_completo = $DB->get_record('user', ['id' => $issuer->id]);
             if (!$issuer_completo) $issuer_completo = $issuer;
 
@@ -458,11 +468,8 @@ function local_trustymatchmaker_load_static_medals_grid($user) {
                 'profile_pic' => local_trustymatchmaker_load_profile_picture($issuer_completo, context_system::instance(), $PAGE, 30)
             ];
         }
-
-        if (empty($issuers_list_data)) {
-            continue;
-        }
-
+        
+        // Se o código chegou aqui, a medalha tem concedentes válidos.
         $givers_count = count($issuers_list_data);
 
         // --- Preparar dados para o ÍCONE DA GRADE ---
@@ -487,12 +494,16 @@ function local_trustymatchmaker_load_static_medals_grid($user) {
     }
 
     // 2. Colocar a grade dentro da sua seção genérica
-    // Se nenhum ícone foi renderizado, $grid_html estará vazio
     $templatedata = [
         'section_name' => "Suas medalhas",
         'section_id' => "medals-section",
         'conteudohtml' => "<div class='medal-grid'>".$grid_html."</div>"
     ];
+    // Se a grade estiver vazia, mostramos uma mensagem de "nada a mostrar"
+    if (empty($grid_html)) {
+        $nada = $OUTPUT->render_from_template('local_trustymatchmaker/nada', ['texto' => "Nenhuma medalha concedida ainda."]);
+        $templatedata['conteudohtml'] = $nada;
+    }
     echo $OUTPUT->render_from_template('local_trustymatchmaker/section', $templatedata);
 
     // 3. Renderizar os popups escondidos
