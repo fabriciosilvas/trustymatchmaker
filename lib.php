@@ -60,16 +60,23 @@ function local_trustymatchmaker_load_profile_picture($user, $context, $page, $si
     $hasPicture = $DB->get_field('user', 'picture', ['id' => $user->id]);
 
     if (!$hasPicture) {
+        // Se o usuário NÃO TEM FOTO, renderiza as iniciais
         $url = core_user::get_initials($user);
-        if ($size == 50) {
-            return $OUTPUT->render_from_template('local_trustymatchmaker/inicial_pfl', ['user-initials' => $url, 's50' => true]);
+        $data = ['user-initials' => $url]; // Prepara os dados
+
+        // Define a flag de tamanho correta
+        if ($size == 30) {
+            $data['s30'] = true;
+        } else if ($size == 50) {
+            $data['s50'] = true;
+        } else {
+            // Padrão para 100 (ou qualquer outro tamanho)
+            $data['s100'] = true; 
         }
-
-        return $OUTPUT->render_from_template('local_trustymatchmaker/inicial_pfl', ['user-initials' => $url, 's100' => true]);
-
-
+    return $OUTPUT->render_from_template('local_trustymatchmaker/inicial_pfl', $data);
     } else {
-        return $OUTPUT->render_from_template('local_trustymatchmaker/imagem_pfl', ['link' => $url, 'size' => $size]);
+    // Se o usuário TEM FOTO, renderiza a imagem
+    return $OUTPUT->render_from_template('local_trustymatchmaker/imagem_pfl', ['link' => $url, 'size' => $size]);
     }
 }
 

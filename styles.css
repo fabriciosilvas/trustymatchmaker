@@ -511,12 +511,18 @@
     border-bottom: none;
 }
 
-/* Estiliza a foto de perfil/iniciais do concessor */
-.medal-issuer-item .userpicture,
-.medal-issuer-item .userinitials {
+.userinitials.size-30 {
     width: 30px;
     height: 30px;
     font-size: 14px;
+}
+
+/* Estiliza a foto de perfil/iniciais do concessor */
+.medal-issuer-item .userpicture,
+.medal-issuer-item .userinitials {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 14px !important;
 }
 .medal-issuer-item span {
     font-size: 14px;
