@@ -66,7 +66,7 @@ $paginaAtual = [
 
 $templateContext = [
     'linkInfo' => '/local/trustymatchmaker/profile.php',
-    'linkMedals' => '#',
+    'linkMedals' => '/local/trustymatchmaker/medals.php',
     'linkFriends' => '/local/trustymatchmaker/friends.php',
     'linkColaboratores' => '/local/trustymatchmaker/collaborators.php',
     'info' => true

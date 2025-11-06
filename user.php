@@ -96,20 +96,17 @@ $paginaAtual = [
 
 $templateContext = [
     'linkInfo' => '/local/trustymatchmaker/user.php?id='.$userid,
-    'linkMedals' => '#',
+    'linkMedals' => '/local/trustymatchmaker/medals.php?id='.$userid,
     'linkFriends' => '/local/trustymatchmaker/friends.php?id='.$userid,
+    'linkColaboratores' => '#',
     'info' => true
 ];
-
-
 
 $user = $DB->get_record('user', ['id' => $userid]);
 
 $imagem = local_trustymatchmaker_load_profile_picture($user, $context, $PAGE);
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav', $paginaAtual);
-
-
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
     'imagem_perfil' => $imagem,

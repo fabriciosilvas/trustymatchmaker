@@ -106,7 +106,7 @@ echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
 
 $templateContext = [
     'linkInfo' => '/local/trustymatchmaker/user.php?id='.$userid,
-    'linkMedals' => '#',
+    'linkMedals' => '/local/trustymatchmaker/medals.php?id='.$userid,
     'linkFriends' => '/local/trustymatchmaker/friends.php?id='.$userid,
     'friends' => true,
 ];

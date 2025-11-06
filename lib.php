@@ -290,9 +290,6 @@ function local_trustymatchmaker_load_sections_collaborators($user) {
     $templatedata = ['section_name' => "Colaboradores",
         'conteudohtml' => $collaboratorList];
     echo $OUTPUT->render_from_template('local_trustymatchmaker/section', $templatedata);  
-
-
-    
 }
 
 function local_trustymatchmaker_load_user_friends($output, $db, $user_id) {
@@ -363,7 +360,6 @@ function local_trustymatchmaker_load_user_friends($output, $db, $user_id) {
     
 }
 
-
 function local_trustymatchmaker_load_my_friends_list($output, $db, $user_id) {
     global $PAGE;
     $contacts = local_trustymatchmaker_get_user_friends($db, $user_id);
@@ -392,3 +388,113 @@ function local_trustymatchmaker_load_my_friends_list($output, $db, $user_id) {
     echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
 }
 
+function local_trustymatchmaker_load_static_medals_grid($user) {
+    global $OUTPUT, $CFG, $DB, $PAGE; 
+
+    // --- DADOS ESTÁTICOS (FALSOS) ---
+    
+    // 1. Definição das medalhas
+    $medals_data = [
+        'empatia' => [
+            'id' => 1,
+            'name' => 'Empatia',
+            'icon' => $CFG->wwwroot . '/local/trustymatchmaker/assets/img/icon_empatia.svg',
+            'description' => 'Empatia é a capacidade de compreender e partilhar os sentimentos de outra pessoa.',
+            'modal_id' => 'modal_medal_1'
+        ],
+        'ouvir' => [
+            'id' => 2,
+            'name' => 'Saber ouvir',
+            'icon' => $CFG->wwwroot . '/local/trustymatchmaker/assets/img/icon_ouvir.svg',
+            'description' => 'Saber ouvir é uma habilidade de comunicação crucial.',
+            'modal_id' => 'modal_medal_2'
+        ],
+        'cordial' => [
+            'id' => 3,
+            'name' => 'Cordialidade',
+            'icon' => $CFG->wwwroot . '/local/trustymatchmaker/assets/img/icon_cordial.svg',
+            'description' => 'Ser cordial significa ser amável e respeitoso com os colegas.',
+            'modal_id' => 'modal_medal_3'
+        ],
+    ];
+    
+    // 2. Concessões Falsas (Quem deu as medalhas)
+    $wendell = $DB->get_record('user', ['username' => 'wendell'], 'id, firstname, lastname');
+    $maria = $DB->get_record('user', ['username' => 'maria'], 'id, firstname, lastname');
+
+    if (!$wendell) $wendell = (object)['id' => 3, 'firstname' => 'Wendell', 'lastname' => 'Barreto'];
+    if (!$maria) $maria = (object)['id' => 4, 'firstname' => 'Maria', 'lastname' => 'Pereira'];
+
+    $concessoes = [
+        'empatia' => [$wendell, $maria], 
+        'ouvir' => [$wendell],
+        'cordial' => [$maria],
+    ];
+
+    // --- FIM DOS DADOS ESTÁTICOS ---
+
+    $grid_html = "";
+    $popups_html = ""; 
+
+    // 1. Renderizar cada ícone E seu respectivo popup
+    foreach ($medals_data as $key => $medal) {
+        
+        $givers = $concessoes[$key];
+
+        // --- Preparar dados para o POPUP (E FILTRAR) ---
+        $issuers_list_data = []; // Lista final de concedentes
+        foreach ($givers as $issuer) {
+            
+            // A verificação que impede a auto-concessão
+            if ($issuer->id == $user->id) {
+                continue;
+            }
+
+            $issuer_completo = $DB->get_record('user', ['id' => $issuer->id]);
+            if (!$issuer_completo) $issuer_completo = $issuer;
+
+            $issuers_list_data[] = [
+                'fullname' => fullname($issuer),
+                'profile_pic' => local_trustymatchmaker_load_profile_picture($issuer_completo, context_system::instance(), $PAGE, 30)
+            ];
+        }
+
+        if (empty($issuers_list_data)) {
+            continue;
+        }
+
+        $givers_count = count($issuers_list_data);
+
+        // --- Preparar dados para o ÍCONE DA GRADE ---
+        $icon_data = [
+            'name' => $medal['name'],
+            'icon_url' => $medal['icon'],
+            'count' => $givers_count,
+            'has_count' => $givers_count > 1, 
+            'modal_id' => $medal['modal_id']
+        ];
+        $grid_html .= $OUTPUT->render_from_template('local_trustymatchmaker/medal_icon_static', $icon_data);
+
+        // --- Preparar dados para o POPUP ---
+        $popup_data = [
+            'modal_id' => $medal['modal_id'],
+            'name' => $medal['name'],
+            'icon' => $medal['icon'],
+            'description' => $medal['description'],
+            'issuers' => $issuers_list_data // Usa a lista já filtrada
+        ];
+        $popups_html .= $OUTPUT->render_from_template('local_trustymatchmaker/medal_popup', $popup_data);
+    }
+
+    // 2. Colocar a grade dentro da sua seção genérica
+    // Se nenhum ícone foi renderizado, $grid_html estará vazio
+    $templatedata = [
+        'section_name' => "Suas medalhas",
+        'section_id' => "medals-section",
+        'conteudohtml' => "<div class='medal-grid'>".$grid_html."</div>"
+    ];
+    echo $OUTPUT->render_from_template('local_trustymatchmaker/section', $templatedata);
+
+    // 3. Renderizar os popups escondidos
+    echo $popups_html;
+}
