@@ -73,8 +73,16 @@ echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
     'imagem_perfil' => $imagem,
     'username' => fullname($user)
 ]);
+$visibility = local_trustymatchmaker_get_visibility($userid);
+if ($userid == $USER->id) {
+    $visibility = true;
+    $templateContext['linkColaboratores'] = '/local/trustymatchmaker/collaborators.php';
 
-local_trustymatchmaker_load_navbar_pfl($templateContext);
+} elseif($visibility) {
+    $templateContext['linkColaboratores'] = '/local/trustymatchmaker/collaborators.php?id='.$userid;
+}
+
+local_trustymatchmaker_load_navbar_pfl($templateContext, $visibility);
 
 // 4. LÓGICA ESPECÍFICA DESTA PÁGINA
 local_trustymatchmaker_load_static_medals_grid($user); // Nova função mais simples

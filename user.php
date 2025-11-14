@@ -115,7 +115,13 @@ echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
 
 //echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', []);
 
-local_trustymatchmaker_load_navbar_pfl($templateContext, false);
+$visibility = local_trustymatchmaker_get_visibility($userid);
+if($visibility) {
+    $templateContext['linkColaboratores'] = '/local/trustymatchmaker/collaborators.php?id='.$userid;
+}
+
+local_trustymatchmaker_load_navbar_pfl($templateContext, $visibility);
+
 local_trustymatchmaker_load_sections_pfl($user);
 
 // 6. definir o rodapé da página

@@ -1,0 +1,19 @@
+define(['jquery'], function($) {
+    var C = {};
+
+    C.init = function() {
+        $('.switch-visibility').on('change', function () {
+            var visible = $(this).is(':checked') ? 1 : 0;
+
+            $.ajax({
+                url: '/local/trustymatchmaker/set_visibility.php',
+                method: 'POST',
+                data: {
+                    visible: visible,
+                }
+            });
+        });
+    };
+
+    return C;
+});

@@ -40,6 +40,14 @@ else {
     redirect(new moodle_url('/login/index.php'));
 }
 
+$userid = optional_param('id', $USER->id, PARAM_INT); // User id.
+
+if (!($DB->record_exists('user', ['id' => $userid]))) {
+    redirect(new moodle_url('/local/trustymatchmaker/index.php'));
+}
+
+$user = $DB->get_record('user', ['id' => $userid]);
+
 $context = context_system::instance();
 $PAGE->set_context($context);
 
@@ -61,28 +69,36 @@ $paginaAtual = [
 ];
 
 $templateContext = [
-    'linkInfo' => '/local/trustymatchmaker/user.php?id='.$USER->id,
-    'linkMedals' => '#',
-    'linkFriends' => '/local/trustymatchmaker/friends.php?id='.$USER->id,
-    'linkColaboratores' => '/local/trustymatchmaker/collaborators.php',
+    'linkInfo' => '/local/trustymatchmaker/user.php?id='.$user->id,
+    'linkMedals' => '/local/trustymatchmaker/medals.php?id='.$user->id,
+    'linkFriends' => '/local/trustymatchmaker/friends.php?id='.$user->id,
+    'linkColaboratores' => '/local/trustymatchmaker/collaborators.php?id='.$user->id,
     'colaborators' => true
 ];
 
-$imagem = local_trustymatchmaker_load_profile_picture($USER, $context, $PAGE);
+$imagem = local_trustymatchmaker_load_profile_picture($user, $context, $PAGE);
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav', $paginaAtual);
 
+$visiblevalor = local_trustymatchmaker_get_visibility($USER->id);
 
-
-echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
+if ($userid == $USER->id) {
+    echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl_col', [
     'imagem_perfil' => $imagem,
-    'username' => fullname($USER)
+    'username' => fullname($user),
+    'visible' => $visiblevalor
 ]);
+} else {
+    echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
+    'imagem_perfil' => $imagem,
+    'username' => fullname($user),
+]);
+}
 
+local_trustymatchmaker_load_navbar_pfl($templateContext, true);
 
-local_trustymatchmaker_load_navbar_pfl($templateContext);
+local_trustymatchmaker_load_sections_collaborators($user);
 
-local_trustymatchmaker_load_sections_collaborators($USER);
-
+$PAGE->requires->js_call_amd('local_trustymatchmaker/visibility', 'init');
 
 echo $OUTPUT->footer();

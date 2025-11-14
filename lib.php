@@ -80,7 +80,7 @@ function local_trustymatchmaker_load_profile_picture($user, $context, $page, $si
     }
 }
 
-function local_trustymatchmaker_load_navbar_pfl($pagina, $show_collaborators = true) {
+function local_trustymatchmaker_load_navbar_pfl($pagina, $show_collaborators) {
     global $OUTPUT;
     if ($show_collaborators) {
         echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', $pagina);
@@ -290,7 +290,7 @@ function local_trustymatchmaker_load_sections_collaborators($user) {
     }
 
     if (empty($collaboratorList)) {
-        $collaboratorList = $OUTPUT->render_from_template('local_trustymatchmaker/nada', ['texto' => "Você não possui colaboradores."]);
+        $collaboratorList = $OUTPUT->render_from_template('local_trustymatchmaker/nada', ['texto' => "Usuário não possui colaboradores."]);
     }
     $templatedata = ['section_name' => "Colaboradores",
         'conteudohtml' => $collaboratorList];
@@ -515,4 +515,31 @@ function local_trustymatchmaker_load_static_medals_grid($user) {
 
     // 3. Renderizar os popups escondidos
     echo $popups_html;
+}
+
+function local_trustymatchmaker_get_visibility($userid) {
+    global $DB;
+    $visibility = $DB->get_field('collaboratorvisibility', 'visibility', ['userid' => $userid]);
+
+    if ($visibility != '1') {
+        return false;
+    }
+    else {
+        return true;
+    };
+}
+
+function local_trustymatchmaker_set_visibility($userid, $visible) {
+    global $DB;
+    $record = $DB->get_record('collaboratorvisibility', ['userid' => $userid]);
+    if ($record) {
+        $record->visibility = $visible;
+        $DB->update_record('collaboratorvisibility', $record);
+    }
+    else {
+        $new_record = new stdClass();
+        $new_record->userid = $userid;
+        $new_record->visibility = $visible;
+        $DB->insert_record('collaboratorvisibility', $new_record);
+    }
 }

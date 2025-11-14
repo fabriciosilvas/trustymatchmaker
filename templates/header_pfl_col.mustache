@@ -1,0 +1,29 @@
+<div class="d-flex align-items-center margem">
+    <div class="me-auto">
+        <div class="page-context-header d-flex align-items-center mb-2">
+            <div class="page-header-image">
+                {{{imagem_perfil}}}
+            </div>
+            <div class="page-header-headings">
+                <h1 class="h2 mb-0">{{username}}</h1>
+            </div>
+        </div>
+    </div>
+    <form action="/local/trustymatchmaker/set_visibility.php" method="post" class="d-flex align-items-center editmode-switch-form">
+    <div class="input-group">
+     <div class="d-flex ms-auto">
+        <label for="visibility" class="me-3 mb-0">
+            Tornar pública a lista de colaboradores
+        </label>
+        <div class="custom-control custom-switch">
+            <input type="hidden" name="visible" value="0">
+            <input type="checkbox" id="visibility" name="visible" value="1" {{#visible}}checked{{/visible}} class="custom-control-input switch-visibility">
+            <span class="custom-control-label" for="visibility">&nbsp;</span>
+        </div>  
+    </div>
+    </div>
+    <noscript>
+        <input type="submit" value="Tornar pública a lista de colaboradores">
+    </noscript>
+</form>
+</div>

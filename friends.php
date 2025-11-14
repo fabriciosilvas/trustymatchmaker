@@ -111,16 +111,18 @@ $templateContext = [
     'friends' => true,
 ];
 
+$visibility = local_trustymatchmaker_get_visibility($userid);
 if ($userid == $USER->id) {
     $templateContext['linkColaboratores'] = '/local/trustymatchmaker/collaborators.php';
-
-    local_trustymatchmaker_load_navbar_pfl($templateContext);
+    local_trustymatchmaker_load_navbar_pfl($templateContext, true);
     local_trustymatchmaker_load_sections_friends($user);
 
-} else {
-    local_trustymatchmaker_load_navbar_pfl($templateContext, false);
-    local_trustymatchmaker_load_user_friends($OUTPUT, $DB, $userid);
-
 }
+else {
+    $templateContext['linkColaboratores'] = '/local/trustymatchmaker/collaborators.php?id='.$userid;
+    local_trustymatchmaker_load_navbar_pfl($templateContext, $visibility);
+    local_trustymatchmaker_load_user_friends($OUTPUT, $DB, $userid);
+}
+
 // 6. definir o rodapé da página
 echo $OUTPUT->footer();

@@ -83,8 +83,6 @@ $imagem = local_trustymatchmaker_load_profile_picture($USER, $context, $PAGE);
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav', $paginaAtual);
 
-
-
 echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
     'imagem_perfil' => $imagem,
     'username' => fullname($USER)
@@ -92,7 +90,7 @@ echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
 
 //echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', []);
 
-local_trustymatchmaker_load_navbar_pfl($templateContext);
+local_trustymatchmaker_load_navbar_pfl($templateContext, true);
 local_trustymatchmaker_load_sections_pfl($USER);
 
 // 6. definir o rodapé da página
