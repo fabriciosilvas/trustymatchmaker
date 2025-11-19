@@ -124,5 +124,7 @@ else {
     local_trustymatchmaker_load_user_friends($OUTPUT, $DB, $userid);
 }
 
+$PAGE->requires->js_call_amd('local_trustymatchmaker/unfriend', 'init');
+
 // 6. definir o rodapé da página
 echo $OUTPUT->footer();

@@ -373,6 +373,7 @@ function local_trustymatchmaker_load_my_friends_list($output, $db, $user_id) {
         $friendName = fullname($friend);
         $friendProfilePicture = local_trustymatchmaker_load_profile_picture($friend, context_system::instance(), $PAGE, 50);
         $friendList .= $output->render_from_template('local_trustymatchmaker/friend', [
+            'friend-id' => $friend->id,
             'profile-link' => $firendProfile,
             'friend-name' => $friendName,
             'profile-picture' => $friendProfilePicture
@@ -542,4 +543,10 @@ function local_trustymatchmaker_set_visibility($userid, $visible) {
         $new_record->visibility = $visible;
         $DB->insert_record('collaboratorvisibility', $new_record);
     }
+}
+
+function local_trustymatchmaker_remove_friend($userid, $friendtoremove) {
+    global $DB;
+    $deleted1 = $DB->delete_records('message_contacts', ['userid' => $userid, 'contactid' => $friendtoremove]);
+    $deleted2 = $DB->delete_records('message_contacts', ['userid' => $friendtoremove, 'contactid' => $userid]);
 }

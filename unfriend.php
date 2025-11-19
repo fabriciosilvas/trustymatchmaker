@@ -25,13 +25,13 @@ require_once('../../config.php');
 
 require_once($CFG->dirroot. '/local/trustymatchmaker/lib.php');
 
-$visible = optional_param('visible', 0, PARAM_INT);
-$userid = $USER->id;
-
 require_login();
+
+$friendtoremove = required_param('friendtoremove', PARAM_INT);
+$userid = $USER->id;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
 
 
-local_trustymatchmaker_set_visibility($userid, $visible);
+local_trustymatchmaker_remove_friend($userid, $friendtoremove);

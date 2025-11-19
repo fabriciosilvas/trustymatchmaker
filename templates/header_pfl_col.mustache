@@ -9,7 +9,7 @@
             </div>
         </div>
     </div>
-    <form action="/local/trustymatchmaker/set_visibility.php" method="post" class="d-flex align-items-center editmode-switch-form">
+    <form action="/local/trustymatchmaker/set_visibility.php" method="post" class="d-flex align-items-center switch-visibility-form">
     <div class="input-group">
      <div class="d-flex ms-auto">
         <label for="visibility" class="me-3 mb-0">
@@ -18,8 +18,8 @@
         <div class="custom-control custom-switch">
             <input type="hidden" name="visible" value="0">
             <input type="checkbox" id="visibility" name="visible" value="1" {{#visible}}checked{{/visible}} class="custom-control-input switch-visibility">
-            <span class="custom-control-label" for="visibility">&nbsp;</span>
-        </div>  
+            <label class="custom-control-label" for="visibility"></label>
+       </div>
     </div>
     </div>
     <noscript>
