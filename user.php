@@ -108,7 +108,7 @@ $imagem = local_trustymatchmaker_load_profile_picture($user, $context, $PAGE);
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav', $paginaAtual);
 
-$score = local_trustymatchmaker_load_overall_score();
+$score = local_trustymatchmaker_load_overall_score($userid);
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
     'imagem_perfil' => $imagem,
