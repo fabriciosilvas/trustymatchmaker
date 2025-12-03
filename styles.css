@@ -529,3 +529,81 @@
     color: var(--font-letter);
 }
 /* --- FIM DO CSS DO POPUP DE MEDALHA --- */
+
+.label-visibility {
+    font-size: 16px;
+}
+
+/* CSS dos scores e estrelas */
+
+.score-list {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    display: grid;
+    margin-left: 20px;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 50px;
+    row-gap: 20px;
+}
+
+.score-item {
+    display: flex;
+    align-items: center;
+    min-width: 180px;
+}
+
+.score-name {
+    font-size: 18px;
+    min-width: 140px;
+    color: var(--font-letter);
+    font-weight: 500;
+}
+
+.score-name.overall {
+    margin-top: 5px;
+    margin-left: 10px;
+    align-self: center;
+}
+
+.score-value.overall {
+    font-size: 20px;
+}
+
+.score-value {
+    margin-left: 15px;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--font-letter);
+}
+
+.star-rating {
+    position: relative;
+    margin-left: 10px;
+    font-size: 20px;
+    display: inline-block;
+}
+
+.back-stars {
+    display: flex;
+    color: #757575;
+}
+
+.front-stars {
+    display: flex;
+    color: #ffd22e;
+    position: absolute;
+    top: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.overall-stars-wrapper {
+    display: flex;
+}
+
+.overall-score {
+    margin-top: 20px;
+}
+ .overall-score .star-rating {
+    font-size: 25px;
+ }

@@ -108,9 +108,12 @@ $imagem = local_trustymatchmaker_load_profile_picture($user, $context, $PAGE);
 
 echo $OUTPUT->render_from_template('local_trustymatchmaker/sec_nav', $paginaAtual);
 
+$score = local_trustymatchmaker_load_overall_score();
+
 echo $OUTPUT->render_from_template('local_trustymatchmaker/header_pfl', [
     'imagem_perfil' => $imagem,
-    'username' => fullname($user)
+    'username' => fullname($user),
+    'overallscore' => $score
 ]); 
 
 //echo $OUTPUT->render_from_template('local_trustymatchmaker/pfl_nav', []);

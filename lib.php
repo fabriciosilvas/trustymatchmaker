@@ -198,11 +198,55 @@ function local_trustymatchmaker_load_user_info($output, $db, $user_id) {
 }
 
 function local_trustymatchmaker_load_trust_score($output, $db, $user_id) {
-    $paragrafo = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Usuário ainda não avaliado."]);
 
+     $scores = [
+            [
+            'name' => 'Pontualidade',
+            'score' => 4
+        ],
+            [
+            'name' => 'Empatia',
+            'score' => 5
+        ],
+            [
+            'name' => 'Criatividade',
+            'score' => 4
+        ],
+            [
+            'name' => 'Comunicação',
+            'score' => 5
+        ],
+    ];
+      $stars_html = "";
+      foreach ($scores as $score) {
+        $fill = ($score['score'] / 5) * 100;
+        $data = [
+            'name' => $score['name'],
+            'score' => number_format($score['score'], 1),
+            'fill' => $fill
+        ];
+        $stars_html .= $output->render_from_template('local_trustymatchmaker/score_item', $data);
+    }
     $templatedata = ['section_name' => "Índice de confiança",
-    'conteudohtml' => $paragrafo];
+    'conteudohtml' =>  "<div class='score-list'>".$stars_html."</div>"];
+
     echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
+}
+
+function local_trustymatchmaker_load_overall_score() {
+   global $OUTPUT;
+    $score = [
+        'name' => 'Avaliação geral',
+        'score' => 4,
+    ];
+   $fill = ($score['score'] / 5) * 100;
+   
+   $data = [ 'name' => $score['name'],
+            'score' => number_format($score['score'], 1),
+            'fill' => $fill];
+
+   $overallscore = $OUTPUT->render_from_template('local_trustymatchmaker/overall_score',$data);
+   return $overallscore;
 }
 
 function local_trustymatchmaker_load_sections_friends($user, $otheruser = false) {
