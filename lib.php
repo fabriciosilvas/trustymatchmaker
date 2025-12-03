@@ -465,9 +465,12 @@ function local_trustymatchmaker_load_static_medals_grid($user) {
 
         $issuers_list_data = [];
         foreach ($givers as $issuer) {
+            $profile_url = new moodle_url('/local/trustymatchmaker/user.php', ['id' => $issuer->id]);
+
             $issuers_list_data[] = [
                 'fullname' => fullname($issuer),
-                'profile_pic' => local_trustymatchmaker_load_profile_picture($issuer, context_system::instance(), $PAGE, 30)
+                'profile_pic' => local_trustymatchmaker_load_profile_picture($issuer, context_system::instance(), $PAGE, 30),
+                'profile_url' => $profile_url->out()
             ];
         }
 

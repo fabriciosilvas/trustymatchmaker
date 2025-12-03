@@ -12,8 +12,10 @@
             <ul class="medal-issuers-list">
             {{#issuers}}
                 <li class="medal-issuer-item">
-                    {{{profile_pic}}} 
-                    <span>{{fullname}}</span>
+                    <a href="{{profile_url}}" class="issuer-link">
+                        {{{profile_pic}}}
+                        <span>{{fullname}}</span>
+                    </a>
                 </li>
             {{/issuers}}
             {{^issuers}}

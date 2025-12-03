@@ -451,26 +451,30 @@
 }
 
 .medal-popup-back {
-    position: absolute;
-    top: 8px;
-    left: 8px;
+    width: 30px;
+    height: 30px;
 
-    /* Aparência (como na imagem) */
-    background-color: var(--font-letter);
-    color: var(--secondary-light) !important;
-    border-radius: 6px;
-
-    /* Tamanho e alinhamento da seta */
-    width: 29.11px;
-    height: 31.5px;
-    display: flex;
+    display: flex; 
     align-items: center;
     justify-content: center;
 
-    /* Estilo da seta (arrow) */
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 10;
+
+    background-color: var(--primary-dark);
+    color: var(--secondary-light) !important;
+    border-radius: 6px;
+
     text-decoration: none !important;
     font-size: 24px;
     font-weight: bold;
+
+    line-height: 1;
+    padding: 0;
+    padding-bottom: 4px;
+    cursor: pointer;
 }
 
 .medal-popup-back:hover {
@@ -501,14 +505,35 @@
 }
 
 .medal-issuer-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
     border-bottom: 1px solid #eee;
+    padding: 0;
 }
+
 .medal-issuer-item:last-child {
     border-bottom: none;
+}
+
+.issuer-link {
+    display: flex;       
+    align-items: center; 
+    gap: 10px;           
+    padding: 8px 0;     
+    
+    text-decoration: none !important;
+    color: var(--font-letter) !important;
+    transition: background-color 0.2s;
+}
+
+.issuer-link:hover {
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.issuer-link span {
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .userinitials.size-30 {
@@ -535,7 +560,6 @@
 }
 
 /* CSS dos scores e estrelas */
-
 .score-list {
     margin-top: 20px;
     margin-bottom: 15px;
