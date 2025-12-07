@@ -585,7 +585,7 @@
 
 .score-name.overall {
     margin-top: 5px;
-    margin-left: 10px;
+    gap: 10px;
     align-self: center;
 }
 
@@ -631,3 +631,31 @@
  .overall-score .star-rating {
     font-size: 25px;
  }
+
+.tooltip-description {
+  position: relative;
+  cursor: pointer;
+  font-size: 18px; 
+  color: var(--font-letter);
+}
+
+.tooltip-description .tooltip-text {
+  visibility: hidden;
+  background: #f5f5f5;
+  color: var(--font-letter);
+  padding: 10px 10px;
+  border-radius: 10px;
+  position: absolute;
+  font-size: 14px;
+  z-index: 10;
+  bottom: 100%;
+  left: 50%;     
+  transform: translateX(-50%);
+  justify-content: center;
+  text-align: center;
+  min-width: 250px;
+}
+
+.tooltip-description:hover .tooltip-text {
+  visibility: visible;
+}

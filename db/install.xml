@@ -62,17 +62,26 @@
             <KEY NAME="issuerid" TYPE="foreign" FIELDS="issuerid" REFTABLE="user" REFFIELDS="id"/>
         </KEYS>
     </TABLE>
-    <TABLE NAME="local_trustymatchmaker_trust_score" COMMENT="Default comment for the table, please edit me">
+    <TABLE NAME="local_trustymatchmaker_score_types" COMMENT="Default comment for the table, please edit me">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="punctuality" TYPE="number" LENGTH="10" DECIMALS="1" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="creativity" TYPE="number" LENGTH="10" DECIMALS="1" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="empathy" TYPE="number" LENGTH="10" DECIMALS="1" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="communication" TYPE="number" LENGTH="10" DECIMALS="1" NOTNULL="false" SEQUENCE="false"/>
+          <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+          <FIELD NAME="name" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+          <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_trustymatchmaker_trust_score" COMMENT="Default comment for the table, please edit me">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="scoreid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="value" TYPE="number" LENGTH="10" DECIMALS="1" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="medalid" TYPE="foreign" FIELDS="scoreid" REFTABLE="local_trustymatchmaker_score_types" REFFIELDS="id"/>
         <KEY NAME="trustymatchmaker_userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>

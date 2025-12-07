@@ -198,63 +198,76 @@ function local_trustymatchmaker_load_user_info($output, $db, $user_id) {
 }
 
 function local_trustymatchmaker_load_trust_score($output, $db, $user_id) {
-    $scores = $db->get_record('local_trustymatchmaker_trust_score', ['userid' => $user_id]);
+    $scores = $db->get_records_sql(
+    'SELECT ts.*, st.*
+      FROM {local_trustymatchmaker_trust_score} ts
+      JOIN {local_trustymatchmaker_score_types} st
+           ON st.id = ts.scoreid
+     WHERE ts.userid = :userid',
+    [
+        'userid' => $user_id, 
+    ]
+    );
     if ($scores) {
-        $scores = [
-            [
-                'name' => 'Pontualidade',
-                'score' => $scores->punctuality
-            ],
-            [
-                'name' => 'Empatia',
-                'score' => $scores->empathy
-            ],
-            [
-                'name' => 'Criatividade',
-                'score' => $scores->creativity
-            ],
-            [
-                'name' => 'Comunicação',
-                'score' => $scores->communication
-            ],
-        ];
         $stars_html = "";
         foreach ($scores as $score) {
-            $fill = ($score['score'] / 5) * 100;
+            if ($score->value >= 1) {
+            $fill = ($score->value/5) * 100;
             $data = [
-                'name' => $score['name'],
-                'score' => number_format($score['score'], 1),
-                'fill' => $fill
+                'name' => $score->name,
+                'fill' => $fill,
+                'score' => $score->value,
+                'description' => $score->description
             ];
-            $stars_html .= $output->render_from_template('local_trustymatchmaker/score_item', $data);
+
+        $stars_html .= $output->render_from_template('local_trustymatchmaker/score_item', $data);
+        }
         }
         $templatedata = ['section_name' => "Índice de confiança",
         'conteudohtml' =>  "<div class='score-list'>".$stars_html."</div>"];
     }
-
     else {
-        $nada = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Usuário ainda não avaliado."]);
-        $templatedata = ['section_name' => "Índice de confiança",
-        'conteudohtml' => $nada];
-    }
+      $nada = $output->render_from_template('local_trustymatchmaker/nada', ['texto' => "Usuário ainda não avaliado."]);
+      $templatedata = ['section_name' => "Índice de confiança",
+       'conteudohtml' => $nada];
+   }
     echo $output->render_from_template('local_trustymatchmaker/section', $templatedata);
 }
 
 function local_trustymatchmaker_load_overall_score($user_id) {
     $name = 'Avaliação geral';
     global $OUTPUT, $DB;
-    $scores = $DB->get_record('local_trustymatchmaker_trust_score', ['userid' => $user_id]);
+    $scores = $DB->get_records_sql(
+    'SELECT ts.*, st.*
+      FROM {local_trustymatchmaker_trust_score} ts
+      JOIN {local_trustymatchmaker_score_types} st
+           ON st.id = ts.scoreid
+     WHERE ts.userid = :userid',
+    [
+        'userid' => $user_id, 
+    ]
+    );
     if ($scores) {
-        $overall = ($scores->punctuality + $scores->creativity + $scores->empathy + $scores->communication)/4;
+        $overall = 0;
+        $count = 0;
+        foreach ($scores as $score) {
+            if ($score->value >= 1) {
+                $overall += $score->value;
+                $count += 1;
+            }
+        }
+        $overall /= $count;
         $fill = ($overall / 5) * 100;
 
         $data = [ 'name' => $name,
+        'description' => 'Média dos atributos de confiabilidade avaliados.',
         'score' => number_format($overall, 1),
         'fill' => $fill];
     }
     else {
 
         $data = [ 'name' => $name,
+        'description' => 'Usuário ainda não avaliado.',
         'score' => 'N/A',
         'fill' => 0
         ];
