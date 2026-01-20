@@ -3,8 +3,27 @@
             {{{profile-picture}}}
             <h5><a href={{profile-link}}>{{friend-name}}</a></h5>
         </div>
-
-        <div class="btn_ar">
-            <button id="invite-friend" class="btn btn-primary">Adicionar aos contatos</button>
-        </div>
+        {{#sent}}
+            <div class="btn_ar">
+                <button id="requested-friend" class="btn btn-primary" disabled>
+                    Pedido de amizade enviado
+                </button>
+            </div>
+        {{/sent}}
+        {{#received}}
+            <div class="btn_ar">
+                <button id="pending-friend" class="btn btn-primary" disabled>
+                    Pedido pendente
+                </button>
+            </div>
+        {{/received}}
+        {{^sent}}
+        {{^received}}
+            <div class="btn_ar">
+                <button data-friendtoadd="{{friend-id}}" id="invite-friend" class="btn btn-primary">
+                    Adicionar aos contatos
+                </button>
+           </div>
+       {{/received}}
+       {{/sent}}
 </div>

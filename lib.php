@@ -23,6 +23,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_message\api;
+
 function local_trustymatchmaker_get_greeting($user) {
     if ($user == null) {
         return get_string('greetinguser', 'local_trustymatchmaker');
@@ -417,6 +419,9 @@ function local_trustymatchmaker_load_user_friends($output, $db, $user_id) {
         }
         else {
             $otherFriends .= $output->render_from_template('local_trustymatchmaker/other_friend', [
+            'friend-id' => $friend->id,
+            'sent' => local_trustymatchmaker_get_request($USER->id, $friend->id)['sent'],
+            'received' => local_trustymatchmaker_get_request($USER->id, $friend->id)['received'],
             'profile-link' => $firendProfile,
             'friend-name' => $friendName,
             'profile-picture' => $friendProfilePicture
@@ -569,7 +574,35 @@ function local_trustymatchmaker_set_visibility($userid, $visible) {
 }
 
 function local_trustymatchmaker_remove_friend($userid, $friendtoremove) {
-    global $DB;
-    $deleted1 = $DB->delete_records('message_contacts', ['userid' => $userid, 'contactid' => $friendtoremove]);
-    $deleted2 = $DB->delete_records('message_contacts', ['userid' => $friendtoremove, 'contactid' => $userid]);
+    api::remove_contact($userid, $friendtoremove);
+}
+
+function local_trustymatchmaker_add_friend($userid, $friendtoadd) {
+    api::create_contact_request($userid, $friendtoadd);
+}
+
+function local_trustymatchmaker_get_request($userid, $friendid) {
+    $requests = api::get_contact_requests_between_users($userid, $friendid);
+
+    if (empty($requests)) {
+        return [
+            'sent' => false,
+            'received' => false
+        ];
+    }
+    
+    $key = array_key_first($requests);
+    $request = $requests[$key];
+
+    if ($request->userid == $userid) {
+        return [
+            'sent' => true,
+            'received' => false
+        ];
+    }
+
+    return [
+        'sent' => false,
+        'received' => true
+    ];
 }

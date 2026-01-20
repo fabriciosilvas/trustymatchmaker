@@ -125,6 +125,7 @@ else {
 }
 
 $PAGE->requires->js_call_amd('local_trustymatchmaker/unfriend', 'init');
+$PAGE->requires->js_call_amd('local_trustymatchmaker/invite', 'init');
 
 // 6. definir o rodapé da página
 echo $OUTPUT->footer();
