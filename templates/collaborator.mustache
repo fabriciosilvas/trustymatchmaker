@@ -3,8 +3,37 @@
             {{{profile-picture}}}
             <h5><a href={{profile-link}}>{{collaborator-name}}</a></h5>
         </div>
-
-        <div class="btn_ar">
-            <button id="invite-colaboration" class="btn btn-primary">Colaborar</button>
+        <div class="buttons d-flex">
+            <div class="btn_ar">
+                <button id="invite-colaboration" class="btn btn-primary">Colaborar</button>
+            </div>
+            {{#contact}}
+            {{/contact}}
+            {{#sent}}
+                <div class="btn_ar">
+                    <button id="requested-friend" class="btn btn-primary" disabled>
+                        Pedido de amizade enviado
+                    </button>
+                </div>
+            {{/sent}}
+            {{#received}}
+                <div class="btn_ar">
+                    <button id="pending-friend" class="btn btn-primary" disabled>
+                        Pedido pendente
+                    </button>
+                </div>
+            {{/received}}
+        
+            {{^contact}}
+            {{^sent}}
+            {{^received}}
+                <div class="btn_ar">
+                    <button data-friendtoadd="{{collaborator-id}}" id="invite-friend" class="btn btn-primary">
+                        Adicionar aos contatos
+                    </button>
+                </div>
+            {{/received}}
+            {{/sent}}
+            {{/contact}}
         </div>
 </div>

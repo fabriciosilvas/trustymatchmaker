@@ -342,7 +342,7 @@ function local_trustymatchmaker_get_user_collaborators($db, $user_id) {
 }
 
 function local_trustymatchmaker_load_sections_collaborators($user) {
-    global $DB, $OUTPUT, $PAGE;
+    global $DB, $OUTPUT, $PAGE, $USER;
 
     $collaborators = local_trustymatchmaker_get_user_collaborators($DB, $user->id);
 
@@ -355,8 +355,12 @@ function local_trustymatchmaker_load_sections_collaborators($user) {
         $collaboratorName = fullname($collaborator);
         $collaboratorProfilePicture = local_trustymatchmaker_load_profile_picture($collaborator, context_system::instance(), $PAGE, 50);
         $collaboratorList .= $OUTPUT->render_from_template('local_trustymatchmaker/collaborator', [
+            'sent' => local_trustymatchmaker_get_request($USER->id, $collaboratorid)['sent'],
+            'received' => local_trustymatchmaker_get_request($USER->id, $collaboratorid)['received'],
+            'contact' => local_trustymatchmaker_get_request($USER->id, $collaboratorid)['contact'],
             'profile-link' => $collaboratorProfile,
             'collaborator-name' => $collaboratorName,
+            'collaborator-id' => $collaboratorid,
             'profile-picture' => $collaboratorProfilePicture
         ]);
         
@@ -582,10 +586,20 @@ function local_trustymatchmaker_add_friend($userid, $friendtoadd) {
 }
 
 function local_trustymatchmaker_get_request($userid, $friendid) {
+
+    if (api::is_contact($userid, $friendid)) {
+        return [
+            'contact' => true,
+            'sent' => false,
+            'received' => false
+        ];
+    }
+
     $requests = api::get_contact_requests_between_users($userid, $friendid);
 
     if (empty($requests)) {
         return [
+            'contact' => false,
             'sent' => false,
             'received' => false
         ];
@@ -596,12 +610,14 @@ function local_trustymatchmaker_get_request($userid, $friendid) {
 
     if ($request->userid == $userid) {
         return [
+            'contact' => false,
             'sent' => true,
             'received' => false
         ];
     }
 
     return [
+        'contact' => false,
         'sent' => false,
         'received' => true
     ];

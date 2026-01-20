@@ -100,5 +100,6 @@ local_trustymatchmaker_load_navbar_pfl($templateContext, true);
 local_trustymatchmaker_load_sections_collaborators($user);
 
 $PAGE->requires->js_call_amd('local_trustymatchmaker/visibility', 'init');
+$PAGE->requires->js_call_amd('local_trustymatchmaker/invite', 'init');
 
 echo $OUTPUT->footer();
