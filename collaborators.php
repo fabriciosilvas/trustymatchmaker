@@ -96,10 +96,11 @@ if ($userid == $USER->id) {
 }
 
 local_trustymatchmaker_load_navbar_pfl($templateContext, true);
-
 local_trustymatchmaker_load_sections_collaborators($user);
+local_trustymatchmaker_load_medal_selection_modal();
 
 $PAGE->requires->js_call_amd('local_trustymatchmaker/visibility', 'init');
 $PAGE->requires->js_call_amd('local_trustymatchmaker/invite', 'init');
+$PAGE->requires->js_call_amd('local_trustymatchmaker/medals', 'init');
 
 echo $OUTPUT->footer();

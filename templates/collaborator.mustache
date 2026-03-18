@@ -7,6 +7,22 @@
             <div class="btn_ar">
                 <button id="invite-colaboration" class="btn btn-primary">Colaborar</button>
             </div>
+            
+            {{#cangivemedal}}
+                <div class="btn_ar ml-2">
+                    <button class="btn btn-outline-warning give-medal-btn medal-trigger" data-modal-id="modal-select-medal" data-collaboratorid="{{collaborator-id}}">
+                        Presentear Medalha
+                    </button>
+                </div>
+            {{/cangivemedal}}
+            
+            {{^cangivemedal}}
+                <div class="btn_ar ml-2">
+                    <button class="btn btn-secondary" disabled title="Limite de medalhas atingido ou colaboração pendente">
+                        Limite de Medalhas
+                    </button>
+                </div>
+            {{/cangivemedal}}
             {{#contact}}
             {{/contact}}
             {{#sent}}
@@ -23,7 +39,7 @@
                     </button>
                 </div>
             {{/received}}
-        
+
             {{^contact}}
             {{^sent}}
             {{^received}}
@@ -35,5 +51,5 @@
             {{/received}}
             {{/sent}}
             {{/contact}}
-        </div>
+    </div>
 </div>

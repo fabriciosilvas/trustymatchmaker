@@ -83,11 +83,8 @@ if ($userid == $USER->id) {
 }
 
 local_trustymatchmaker_load_navbar_pfl($templateContext, $visibility);
-
-// 4. LÓGICA ESPECÍFICA DESTA PÁGINA
-local_trustymatchmaker_load_static_medals_grid($user); // Nova função mais simples
+local_trustymatchmaker_load_static_medals_grid($user);
 
 $PAGE->requires->js_call_amd('local_trustymatchmaker/medals', 'init');
 
-// 5. Rodapé
 echo $OUTPUT->footer();

@@ -397,7 +397,6 @@
 }
 
 /* --- INÍCIO DO CSS DO POPUP DE MEDALHA --- */
-/* O fundo escuro que cobre a tela inteira */
 .medal-popup-overlay {
     position: fixed;
     top: 0;
@@ -542,7 +541,6 @@
     font-size: 14px;
 }
 
-/* Estiliza a foto de perfil/iniciais do concessor */
 .medal-issuer-item .userpicture,
 .medal-issuer-item .userinitials {
     width: 30px !important;
@@ -555,11 +553,11 @@
 }
 /* --- FIM DO CSS DO POPUP DE MEDALHA --- */
 
+/* --- INÍCIO DO CSS DOS SCORES E ESTRELAS --- */
 .label-visibility {
     font-size: 16px;
 }
 
-/* CSS dos scores e estrelas */
 .score-list {
     margin-top: 20px;
     margin-bottom: 15px;
@@ -659,3 +657,31 @@
 .tooltip-description:hover .tooltip-text {
   visibility: visible;
 }
+/* --- FIM DO CSS DOS SCORES E ESTRELAS --- */
+
+/* --- INÍCIO DO CSS DE CONCEDER MEDALHAS --- */
+.selected-medal-item {
+    border-radius: 8px;
+    background-color: #fff3cd;
+    display: block;
+    padding: 5px;
+    transition: all 0.2s ease-in-out;
+}
+
+#modal-select-medal .medal-selection-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+}
+
+#modal-select-medal .medal-icon-name {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+    font-weight: 500;
+}
+/* --- FIM DO CSS DE CONCEDER MEDALHAS --- */

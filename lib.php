@@ -354,6 +354,8 @@ function local_trustymatchmaker_load_sections_collaborators($user) {
         $collaboratorProfile = new moodle_url('/local/trustymatchmaker/user.php', ['id' => $collaboratorid]);
         $collaboratorName = fullname($collaborator);
         $collaboratorProfilePicture = local_trustymatchmaker_load_profile_picture($collaborator, context_system::instance(), $PAGE, 50);
+        $can_give = local_trustymatchmaker_can_give_medal($USER->id, $collaboratorid);
+
         $collaboratorList .= $OUTPUT->render_from_template('local_trustymatchmaker/collaborator', [
             'sent' => local_trustymatchmaker_get_request($USER->id, $collaboratorid)['sent'],
             'received' => local_trustymatchmaker_get_request($USER->id, $collaboratorid)['received'],
@@ -361,9 +363,9 @@ function local_trustymatchmaker_load_sections_collaborators($user) {
             'profile-link' => $collaboratorProfile,
             'collaborator-name' => $collaboratorName,
             'collaborator-id' => $collaboratorid,
-            'profile-picture' => $collaboratorProfilePicture
+            'profile-picture' => $collaboratorProfilePicture,
+            'cangivemedal' => $can_give
         ]);
-        
     }
 
     if (empty($collaboratorList)) {
@@ -621,4 +623,79 @@ function local_trustymatchmaker_get_request($userid, $friendid) {
         'sent' => false,
         'received' => true
     ];
+}
+
+// Verifica se dois usuários colaboraram entre si.
+function local_trustymatchmaker_have_collaborated($userid1, $userid2) {
+    global $DB;
+    
+    $sql = "SELECT id FROM {collaborators} 
+             WHERE (userid = :userid1 AND collaboratorid = :userid2) 
+                OR (userid = :userid3 AND collaboratorid = :userid4)";
+                
+    $params = [
+        'userid1' => $userid1,
+        'userid2' => $userid2,
+        'userid3' => $userid2,
+        'userid4' => $userid1
+    ];
+    
+    return $DB->record_exists_sql($sql, $params);
+}
+
+/*
+ * Verifica se o usuário pode dar uma medalha para o colaborador.
+ * Regra: Devem ter colaborado e o limite é de 2 medalhas por colaborador.
+ */
+function local_trustymatchmaker_can_give_medal($giverid, $receiverid) {
+    global $DB;
+
+    if (!local_trustymatchmaker_have_collaborated($giverid, $receiverid)) {
+        return false;
+    }
+
+    $medal_count = $DB->count_records('local_trustymatchmaker_issued', [
+        'issuerid' => $giverid,
+        'userid' => $receiverid
+    ]);
+
+    // Retorna true se deu menos de 2 medalhas
+    return ($medal_count < 2);
+}
+
+// Retorna quantas medalhas o usuário ainda pode dar para este colaborador específico.
+function local_trustymatchmaker_get_remaining_medals($giverid, $receiverid) {
+    global $DB;
+    
+    $medal_count = $DB->count_records('local_trustymatchmaker_issued', [
+        'issuerid' => $giverid,
+        'userid' => $receiverid
+    ]);
+    
+    $remaining = 2 - $medal_count;
+    
+    return ($remaining > 0) ? $remaining : 0;
+}
+
+// Renderiza o modal de seleção de medalhas
+function local_trustymatchmaker_load_medal_selection_modal() {
+    global $DB, $OUTPUT, $PAGE, $CFG;
+
+    $medals = $DB->get_records('local_trustymatchmaker_medals', null, 'id ASC');
+    
+    $catalog = [];
+    foreach ($medals as $medal) {
+        $catalog[] = [
+            'id' => $medal->id,
+            'name' => $medal->name,
+            'description' => strip_tags($medal->description), 
+            'icon_url' => $CFG->wwwroot . '/local/trustymatchmaker/assets/img/' . $medal->icon
+        ];
+    }
+
+    $templateContext = [
+        'medals_catalog' => $catalog
+    ];
+
+    echo $OUTPUT->render_from_template('local_trustymatchmaker/medal_select_popup', $templateContext);
 }
