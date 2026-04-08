@@ -199,7 +199,21 @@ function local_trustymatchmaker_load_user_info($output, $db, $user_id) {
     } 
 }
 
+/**
+ * Feature Flag: Controla a exibição do Índice de Confiança (Estrelas)
+ * @return bool True para mostrar para todos, False para ocultar de todos.
+ */
+function local_trustymatchmaker_is_trust_score_enabled() {
+    // Mude para 'false' para ocultar o sistema inteiro.
+    return true; 
+}
+
 function local_trustymatchmaker_load_trust_score($output, $db, $user_id) {
+
+    if (!local_trustymatchmaker_is_trust_score_enabled()) {
+        return; 
+    }
+
     $scores = $db->get_records_sql(
     'SELECT ts.*, st.*
       FROM {local_trustymatchmaker_trust_score} ts
@@ -237,6 +251,11 @@ function local_trustymatchmaker_load_trust_score($output, $db, $user_id) {
 }
 
 function local_trustymatchmaker_load_overall_score($user_id) {
+
+    if (!local_trustymatchmaker_is_trust_score_enabled()) {
+        return; 
+    }
+
     $name = 'Avaliação geral';
     global $OUTPUT, $DB;
     $scores = $DB->get_records_sql(

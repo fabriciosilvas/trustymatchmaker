@@ -55,14 +55,17 @@ define(['jquery', 'core/config'], function($, cfg) {
             }
             
             if (count === 0) {
-                $btn.prop('disabled', true).addClass('disabled').text('Selecione 2 medalhas');
+                $btn.prop('disabled', true).addClass('disabled').text('Selecione 1 ou 2 medalhas');
             } else if (count === 1) {
-                $btn.prop('disabled', true).addClass('disabled').text('Selecione mais 1 medalha');
+                $btn.prop('disabled', false)
+                    .removeClass('disabled')
+                    .data('medalids', medalIds)
+                    .text('Presentear (1 medalha)');
             } else if (count === 2) {
                 $btn.prop('disabled', false)
                     .removeClass('disabled')
                     .data('medalids', medalIds)
-                    .text('Confirmar e Presentear');
+                    .text('Presentear (2 medalhas)');
             }
         });
         

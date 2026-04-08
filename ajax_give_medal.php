@@ -13,16 +13,21 @@ if (!isloggedin() || isguestuser()) {
 $receiverid = required_param('receiverid', PARAM_INT);
 $medalids = required_param_array('medalids', PARAM_INT); 
 $issuerid = $USER->id;
+$qtd_selecionada = count($medalids);
 
-// Trava de segurança no Back-end
-if (count($medalids) !== 2) {
-    echo json_encode(['status' => 'error', 'message' => 'Você deve selecionar exatamente 2 medalhas.']);
+// Trava 1: Garante que selecionou pelo menos 1 e no máximo 2 nesta tela
+if ($qtd_selecionada < 1 || $qtd_selecionada > 2) {
+    echo json_encode(['status' => 'error', 'message' => 'Você deve selecionar 1 ou 2 medalhas.']);
     die();
 }
 
-// Verifica se ele pode dar medalhas
-if (!local_trustymatchmaker_can_give_medal($issuerid, $receiverid)) {
-    echo json_encode(['status' => 'error', 'message' => 'Você já enviou medalhas para este usuário.']);
+// Trava 2: A Matemática do Banco de Dados
+$qtd_ja_dada = $DB->count_records('local_trustymatchmaker_issued', ['issuerid' => $issuerid, 'userid' => $receiverid]);
+
+// Se o que ele escolheu agora + o que ele já deu passar de 2, a gente bloqueia!
+if (($qtd_ja_dada + $qtd_selecionada) > 2) {
+    $restante = 2 - $qtd_ja_dada;
+    echo json_encode(['status' => 'error', 'message' => "Limite excedido. Você já concedeu {$qtd_ja_dada} medalha(s) a este usuário e só pode enviar mais {$restante}."]);
     die();
 }
 
