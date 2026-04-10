@@ -50,22 +50,22 @@ define(['jquery', 'core/config'], function($, cfg) {
 
             if (count > 2) {
                 $(this).removeClass('selected-medal-item');
-                alert("Você só pode selecionar exatamente 2 medalhas.");
+                alert("Você só pode selecionar até 2 medalhas.");
                 return;
             }
             
             if (count === 0) {
-                $btn.prop('disabled', true).addClass('disabled').text('Selecione 1 ou 2 medalhas');
+                $btn.prop('disabled', true).addClass('disabled').text('Selecione até 2 medalhas');
             } else if (count === 1) {
                 $btn.prop('disabled', false)
                     .removeClass('disabled')
                     .data('medalids', medalIds)
-                    .text('Presentear (1 medalha)');
+                    .text('Presentear uma medalha');
             } else if (count === 2) {
                 $btn.prop('disabled', false)
                     .removeClass('disabled')
                     .data('medalids', medalIds)
-                    .text('Presentear (2 medalhas)');
+                    .text('Presentear duas medalhas');
             }
         });
         
@@ -97,12 +97,16 @@ define(['jquery', 'core/config'], function($, cfg) {
                         location.reload(); 
                     } else {
                         alert('Erro: ' + response.message);
-                        $btn.prop('disabled', false).removeClass('disabled').text('Confirmar e Presentear');
+                        var count = $('.selected-medal-item').length;
+                        var textoCorreto = (count === 1) ? 'Presentear (1 medalha)' : 'Presentear (2 medalhas)';
+                        $btn.prop('disabled', false).removeClass('disabled').text(textoCorreto);
                     }
                 },
                 error: function() {
                     alert('Ocorreu um erro de comunicação com o servidor.');
-                    $btn.prop('disabled', false).removeClass('disabled').text('Confirmar e Presentear');
+                    var count = $('.selected-medal-item').length;
+                    var textoCorreto = (count === 1) ? 'Presentear (1 medalha)' : 'Presentear (2 medalhas)';
+                    $btn.prop('disabled', false).removeClass('disabled').text(textoCorreto);
                 }
             });
         });

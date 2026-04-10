@@ -17,14 +17,14 @@ $qtd_selecionada = count($medalids);
 
 // Trava 1: Garante que selecionou pelo menos 1 e no máximo 2 nesta tela
 if ($qtd_selecionada < 1 || $qtd_selecionada > 2) {
-    echo json_encode(['status' => 'error', 'message' => 'Você deve selecionar 1 ou 2 medalhas.']);
+    echo json_encode(['status' => 'error', 'message' => 'Você deve selecionar até duas medalhas.']);
     die();
 }
 
 // Trava 2: A Matemática do Banco de Dados
 $qtd_ja_dada = $DB->count_records('local_trustymatchmaker_issued', ['issuerid' => $issuerid, 'userid' => $receiverid]);
 
-// Se o que ele escolheu agora + o que ele já deu passar de 2, a gente bloqueia!
+// Se o que ele escolheu agora + o que ele já deu passar de 2, bloqueia!
 if (($qtd_ja_dada + $qtd_selecionada) > 2) {
     $restante = 2 - $qtd_ja_dada;
     echo json_encode(['status' => 'error', 'message' => "Limite excedido. Você já concedeu {$qtd_ja_dada} medalha(s) a este usuário e só pode enviar mais {$restante}."]);
@@ -55,14 +55,25 @@ try {
     }
 
     // 2. Notificação
-    if (count($nomes_das_medalhas) > 0) {
+    $qtd_concedida = count($nomes_das_medalhas);
+    
+    if ($qtd_concedida > 0) {
         
         $texto_medalhas = implode(' e ', $nomes_das_medalhas);
-
-        $assunto = 'Você recebeu novas medalhas!';
-        $texto_html = "<p>Olá, <strong>" . fullname($receiver) . "</strong>!</p>";
-        $texto_html .= "<p>O usuário <strong>" . fullname($giver) . "</strong> reconheceu sua colaboração e lhe presenteou com as medalhas: <strong>{$texto_medalhas}</strong>.</p>";
-        $texto_html .= "<p>Acesse o seu perfil do Trusty MatchMaker para ver as medalhas recebidas!</p>";
+        
+        // Verifica se é 1 ou mais de 1 para adaptar o português
+        if ($qtd_concedida === 1) {
+            $assunto = 'Você recebeu uma nova medalha!';
+            $texto_html = "<p>Olá, <strong>" . fullname($receiver) . "</strong>!</p>";
+            $texto_html .= "<p>O usuário <strong>" . fullname($giver) . "</strong> reconheceu sua colaboração e lhe presenteou com a medalha: <strong>{$texto_medalhas}</strong>.</p>";
+            $texto_html .= "<p>Acesse o seu perfil do Trusty MatchMaker para ver a medalha recebida!</p>";;
+        }
+        else {
+            $assunto = 'Você recebeu duas novas medalhas!';
+            $texto_html = "<p>Olá, <strong>" . fullname($receiver) . "</strong>!</p>";
+            $texto_html .= "<p>O usuário <strong>" . fullname($giver) . "</strong> reconheceu sua colaboração e lhe presenteou com as medalhas: <strong>{$texto_medalhas}</strong>.</p>";
+            $texto_html .= "<p>Acesse o seu perfil do Trusty MatchMaker para ver as medalhas recebidas!</p>";;
+        }
 
         $eventdata = new \core\message\message();
         $eventdata->courseid          = SITEID;
@@ -74,13 +85,13 @@ try {
         $eventdata->fullmessage       = strip_tags($texto_html); 
         $eventdata->fullmessageformat = FORMAT_HTML;
         $eventdata->fullmessagehtml   = $texto_html; 
-        $eventdata->smallmessage      = 'Você recebeu as medalhas ' . $texto_medalhas . ' de ' . fullname($giver); 
+        $eventdata->smallmessage      = $smallmessage; 
         $eventdata->notification      = 1; 
 
         message_send($eventdata);
     }
 
-    echo json_encode(['status' => 'success', 'message' => 'Medalhas concedidas e notificação enviada com sucesso!']);
+    echo json_encode(['status' => 'success', 'message' => 'Medalha(s) concedida(s) e notificação enviada com sucesso!']);
     
 } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => 'Erro ao salvar no banco de dados.']);
