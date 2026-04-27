@@ -65,13 +65,13 @@ try {
         if ($qtd_concedida === 1) {
             $assunto = 'Você recebeu uma nova medalha!';
             $texto_html = "<p>Olá, <strong>" . fullname($receiver) . "</strong>!</p>";
-            $texto_html .= "<p>O usuário <strong>" . fullname($giver) . "</strong> reconheceu sua colaboração e lhe presenteou com a medalha: <strong>{$texto_medalhas}</strong>.</p>";
+            $texto_html .= "<p><strong>" . fullname($giver) . "</strong> reconheceu sua colaboração e lhe presenteou com a medalha: <strong>{$texto_medalhas}</strong>.</p>";
             $texto_html .= "<p>Acesse o seu perfil do Trusty MatchMaker para ver a medalha recebida!</p>";;
         }
         else {
             $assunto = 'Você recebeu duas novas medalhas!';
             $texto_html = "<p>Olá, <strong>" . fullname($receiver) . "</strong>!</p>";
-            $texto_html .= "<p>O usuário <strong>" . fullname($giver) . "</strong> reconheceu sua colaboração e lhe presenteou com as medalhas: <strong>{$texto_medalhas}</strong>.</p>";
+            $texto_html .= "<p><strong>" . fullname($giver) . "</strong> reconheceu sua colaboração e lhe presenteou com as medalhas: <strong>{$texto_medalhas}</strong>.</p>";
             $texto_html .= "<p>Acesse o seu perfil do Trusty MatchMaker para ver as medalhas recebidas!</p>";;
         }
 
