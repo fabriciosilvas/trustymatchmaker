@@ -602,8 +602,37 @@ function local_trustymatchmaker_remove_friend($userid, $friendtoremove) {
     api::remove_contact($userid, $friendtoremove);
 }
 
+/*
 function local_trustymatchmaker_add_friend($userid, $friendtoadd) {
     api::create_contact_request($userid, $friendtoadd);
+}
+*/
+
+function local_trustymatchmaker_add_friend($userid, $friendtoadd) {
+    
+    // 1. O PRINCIPAL: Envia o convite de amizade
+    try {
+        api::create_contact_request($userid, $friendtoadd);
+    } 
+    catch (\Exception $e) {}
+
+    // 2. A TENTATIVA DE BURLAR O CHAT (Envolta em segurança)
+    try {
+        $conversation = api::create_conversation(
+            api::MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
+            [ $userid, $friendtoadd ]
+        );
+
+        $mensagem = "Olá! Acabei de enviar uma solicitação de contato no Trusty Matchmaker para colaborarmos.";
+        
+        api::send_message_to_conversation(
+            $userid, 
+            $conversation->id, 
+            $mensagem, 
+            FORMAT_MOODLE
+        );
+    } 
+    catch (\Exception $e) {}
 }
 
 function local_trustymatchmaker_get_request($userid, $friendid) {
