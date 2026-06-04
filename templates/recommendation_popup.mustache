@@ -1,0 +1,108 @@
+<style>
+    .attribute-box {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px; 
+        margin: 8px; 
+        border: 2px solid #dee2e6;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        background-color: white;
+        user-select: none;
+        font-weight: 500;
+        font-size: 1.05em;
+    }
+    .attribute-box:hover {
+        border-color: #0d6efd;
+        background-color: #f8f9fa;
+        transform: translateY(-2px);
+    }
+    /* Estilo quando a caixa é selecionada */
+    .attribute-box.selected-criteria-item {
+        border-color: #0d6efd;
+        background-color: #e9ecef;
+        color: #084298;
+        box-shadow: 0 4px 8px rgba(13,110,253,.15);
+    }
+</style>
+
+<div id="modal-recommendation" class="medal-popup-overlay">
+    <div class="medal-popup-content" style="max-width: 600px;">
+    
+        <a href="#" class="medal-popup-back medal-popup-close" title="Fechar">&times;</a>
+
+        <div id="recommendation-selection-area">
+            <h4 class="mt-4 mb-4 text-center" style="color: #333366;">Escolha os atributos para a recomendação</h4>
+            
+            <div id="step-1-capacidade">
+                <p class="text-center text-muted mb-4">Selecione pelo menos uma habilidades de capacidade desejada.</p>
+                
+                <h5 class="mb-4 text-center" style="color: #0d6efd;"><i class="fa-solid fa-brain me-2"></i> Capacidade</h5>
+                
+                <div class="d-flex flex-wrap justify-content-center mb-4">
+                    <div class="criteria-selectable attribute-box" data-criteria="lideranca" title="Organização e coordenação das atividades e dos membros da equipe.">
+                        <i class="fa-solid fa-flag me-2" style="color: #0d6efd;"></i> <span>Liderança</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box" data-criteria="dedicacao" title="Esforço contínuo e foco na realização das tarefas do grupo.">
+                        <i class="fa-solid fa-fire me-2" style="color: #0d6efd;"></i> <span>Dedicação</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box" data-criteria="eficiencia" title="Realização das tarefas com qualidade e otimização do tempo.">
+                        <i class="fa-solid fa-bolt me-2" style="color: #0d6efd;"></i> <span>Eficiência</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box" data-criteria="proatividade" title="Iniciativa para propor soluções, sugerir ideias ou antecipar demandas do grupo.">
+                        <i class="fa-solid fa-bolt me-2" style="color: #0d6efd;"></i> <span>Proatividade</span>
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button type="button" id="btn-next-step" class="btn btn-primary px-4 py-2 disabled" disabled>
+                        Avançar <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="step-2-integridade" style="display: none;">
+                <p class="text-center text-muted mb-4">Selecione pelo menos um traço de integridade fundamental.</p>
+                
+                <h5 class="mb-4 text-center" style="color: #dc3545;"><i class="fa-solid fa-heart me-2"></i> Integridade</h5>
+                
+                <div class="d-flex flex-wrap justify-content-center mb-4">
+                    <div class="criteria-selectable attribute-box" data-criteria="generosidade" title="Disposição para ajudar e compartilhar conhecimento.">
+                        <i class="fa-solid fa-hand-holding-heart me-2" style="color: #dc3545;"></i> <span>Generosidade</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box" data-criteria="etica" title="Transparência e honestidade no trabalho.">
+                        <i class="fa-solid fa-scale-balanced me-2" style="color: #dc3545;"></i> <span>Ética</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box" data-criteria="comportamento" title="Bom relacionamento interpessoal e respeito.">
+                        <i class="fa-solid fa-users me-2" style="color: #dc3545;"></i> <span>Comportamento</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" id="btn-prev-step" class="btn btn-outline-secondary px-4 py-2">
+                        <i class="fa-solid fa-arrow-left me-2"></i> Voltar
+                    </button>
+                    <button type="button" id="btn-search-recommendations" class="btn btn-success px-4 py-2 disabled" disabled>
+                        <i class="fa-solid fa-magnifying-glass me-2"></i> Buscar Match
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="recommendation-results-area" style="display: none;">
+            <h4 class="mt-4 mb-4 text-center" style="color: #333366;">Resultado das suas escolhas</h4>
+            <p class="text-center text-muted mb-4">Baseado nas suas escolhas, estes são os melhores perfis:</p>
+            
+            <div id="recommendation-list" class="d-flex flex-column gap-3 mb-4" style="max-height: 26.5vh; overflow-y: auto; padding-right: 10px;">
+                </div>
+
+            <div class="text-center mt-3">
+                <button type="button" id="btn-back-to-filters" class="btn btn-outline-secondary px-4 py-2">
+                    <i class="fa-solid fa-filter me-2"></i> Refazer Filtros
+                </button>
+            </div>
+        </div>
+
+    </div>

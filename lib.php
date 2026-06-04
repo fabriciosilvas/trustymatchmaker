@@ -610,13 +610,11 @@ function local_trustymatchmaker_add_friend($userid, $friendtoadd) {
 
 function local_trustymatchmaker_add_friend($userid, $friendtoadd) {
     
-    // 1. O PRINCIPAL: Envia o convite de amizade
     try {
         api::create_contact_request($userid, $friendtoadd);
     } 
     catch (\Exception $e) {}
 
-    // 2. A TENTATIVA DE BURLAR O CHAT (Envolta em segurança)
     try {
         $conversation = api::create_conversation(
             api::MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
@@ -746,4 +744,13 @@ function local_trustymatchmaker_load_medal_selection_modal() {
     ];
 
     echo $OUTPUT->render_from_template('local_trustymatchmaker/medal_select_popup', $templateContext);
+}
+
+//Carrega o modal de sugestão de colaboradores na tela
+function local_trustymatchmaker_load_recommendation_modal() {
+    global $OUTPUT;
+
+    $templateContext = [];
+
+    echo $OUTPUT->render_from_template('local_trustymatchmaker/recommendation_popup', $templateContext);
 }
