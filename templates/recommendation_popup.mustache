@@ -1,4 +1,34 @@
 <style>
+    /* Controle inteligente de tamanho da janela */
+    .medal-popup-content {
+        width: 95% !important; /* Ocupa até 95% da tela em monitores pequenos */
+        max-width: 850px !important; /* Trava em 850px em monitores grandes */
+        max-height: 80vh !important; /* Nunca ultrapassa 80% da altura do monitor */
+        overflow-y: auto; /* Cria uma barra de rolagem interna se precisar */
+    }
+
+    .medal-popup-overlay {
+        display: flex;
+        align-items: flex-start !important; /* Muda o alinhamento do centro para o topo */
+        padding-top: 15vh; /* Essa é a distância fixa do topo. Aumente para 15vh ou 20vh para empurrar a janela mais para baixo */
+    }
+    
+    /* Mantém o botão de fechar sempre visível, mesmo rolando a tela */
+    .medal-popup-close {
+        position: sticky !important; 
+        top: 0; 
+        z-index: 1050;
+    }
+
+    /* Esconde os itens extras por padrão */
+    .extra-attribute {
+        display: none !important; 
+    }
+
+    /* Mostra os itens extras quando a lista estiver expandida */
+    .show-extras .extra-attribute {
+        display: flex !important; 
+    }
     .attribute-box {
         display: flex;
         align-items: center;
@@ -18,6 +48,7 @@
         background-color: #f8f9fa;
         transform: translateY(-2px);
     }
+    
     /* Estilo quando a caixa é selecionada */
     .attribute-box.selected-criteria-item {
         border-color: #0d6efd;
@@ -28,7 +59,7 @@
 </style>
 
 <div id="modal-recommendation" class="medal-popup-overlay">
-    <div class="medal-popup-content" style="max-width: 600px;">
+    <div class="medal-popup-content position-relative">
     
         <a href="#" class="medal-popup-back medal-popup-close" title="Fechar">&times;</a>
 
@@ -40,19 +71,56 @@
                 
                 <h5 class="mb-4 text-center" style="color: #0d6efd;"><i class="fa-solid fa-brain me-2"></i> Capacidade</h5>
                 
-                <div class="d-flex flex-wrap justify-content-center mb-4">
-                    <div class="criteria-selectable attribute-box" data-criteria="lideranca" title="Organização e coordenação das atividades e dos membros da equipe.">
-                        <i class="fa-solid fa-flag me-2" style="color: #0d6efd;"></i> <span>Liderança</span>
+                <div class="d-flex flex-wrap justify-content-center mb-2" id="lista-capacidade">
+                    <div class="criteria-selectable attribute-box" data-criteria="assiduidade" title="Consistência de participação nas atividades do grupo.">
+                        <i class="fa-solid fa-calendar-check me-2" style="color: #0d6efd;"></i> <span>Assiduidade</span>
                     </div>
-                    <div class="criteria-selectable attribute-box" data-criteria="dedicacao" title="Esforço contínuo e foco na realização das tarefas do grupo.">
+                    <div class="criteria-selectable attribute-box" data-criteria="alto_conhecimento" title="Domínio aprofundado de um tema ou área específica.">
+                        <i class="fa-solid fa-brain me-2" style="color: #0d6efd;"></i> <span>Alto conhecimento em um tópico</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box" data-criteria="boa_comunicacao" title="Expressão de ideias de forma clara, objetiva e compreensível.">
+                        <i class="fa-solid fa-comments me-2" style="color: #0d6efd;"></i> <span>Boa comunicação</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box" data-criteria="comprometimento" title="Envolvimento ativo do estudante nas atividades.">
+                        <i class="fa-solid fa-handshake-angle me-2" style="color: #0d6efd;"></i> <span>Comprometimento</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box" data-criteria="cooperacao" title="Atuação colaborativa e auxílio aos colegas.">
+                        <i class="fa-solid fa-people-carry-box me-2" style="color: #0d6efd;"></i> <span>Cooperação</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box" data-criteria="cumprimento_prazos" title="Realização das atividades com respeito a prazos e responsabilidades previamente estabelecidas.">
+                        <i class="fa-solid fa-calendar-days me-2" style="color: #0d6efd;"></i> <span>Cumprimento de prazos e compromissos</span>
+                    </div>
+
+                    <div class="criteria-selectable attribute-box extra-attribute" data-criteria="dedicacao" title="Esforço contínuo e foco na realização das tarefas do grupo.">
                         <i class="fa-solid fa-fire me-2" style="color: #0d6efd;"></i> <span>Dedicação</span>
                     </div>
-                    <div class="criteria-selectable attribute-box" data-criteria="eficiencia" title="Realização das tarefas com qualidade e otimização do tempo.">
+                    <div class="criteria-selectable attribute-box extra-attribute" data-criteria="disponibilidade" title="Abertura para contato durante o período de colaboração.">
+                        <i class="fa-solid fa-door-open me-2" style="color: #0d6efd;"></i> <span>Disponibilidade</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box extra-attribute" data-criteria="eficiencia" title="Realização das tarefas com qualidade e otimização do tempo.">
                         <i class="fa-solid fa-bolt me-2" style="color: #0d6efd;"></i> <span>Eficiência</span>
                     </div>
-                    <div class="criteria-selectable attribute-box" data-criteria="proatividade" title="Iniciativa para propor soluções, sugerir ideias ou antecipar demandas do grupo.">
-                        <i class="fa-solid fa-bolt me-2" style="color: #0d6efd;"></i> <span>Proatividade</span>
+                    <div class="criteria-selectable attribute-box extra-attribute" data-criteria="feedback" title="Retorno construtivo fornecido aos colegas sobre o desempenho ou comportamento deles.">
+                        <i class="fa-solid fa-comment-dots me-2" style="color: #0d6efd;"></i> <span>Feedback</span>
                     </div>
+                    <div class="criteria-selectable attribute-box extra-attribute" data-criteria="foco" title="Atenção e concentração nas tarefas do grupo.">
+                        <i class="fa-solid fa-bullseye me-2" style="color: #0d6efd;"></i> <span>Foco</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box extra-attribute" data-criteria="lideranca" title="Organização e coordenação das atividades e dos membros da equipe.">
+                        <i class="fa-solid fa-flag me-2" style="color: #0d6efd;"></i> <span>Liderança</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box extra-attribute" data-criteria="pontualidade" title="Cumprimento rigoroso dos horários estabelecidos para reuniões, entregas e demais compromissos.">
+                        <i class="fa-solid fa-stopwatch me-2" style="color: #0d6efd;"></i> <span>Pontualidade</span>
+                    </div>
+                    <div class="criteria-selectable attribute-box extra-attribute" data-criteria="proatividade" title="Iniciativa para propor soluções, sugerir ideias ou antecipar demandas do grupo.">
+                        <i class="fa-solid fa-rocket me-2" style="color: #0d6efd;"></i> <span>Proatividade</span>
+                    </div>
+                </div>
+
+                <div class="text-center mb-4">
+                    <button type="button" class="btn btn-sm btn-link text-decoration-none btn-toggle-attributes" data-target="#lista-capacidade" style="color: #0d6efd; font-weight: 500;">
+                        Mostrar mais <i class="fa-solid fa-chevron-down ms-1"></i>
+                    </button>
                 </div>
 
                 <div class="text-end mt-4">

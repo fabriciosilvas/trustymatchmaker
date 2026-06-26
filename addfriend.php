@@ -27,11 +27,47 @@ require_once($CFG->dirroot. '/local/trustymatchmaker/lib.php');
 
 require_login();
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    die(json_encode(['status' => 'error', 'message' => 'Método não permitido']));
+}
+
 $friendtoadd = required_param('friendtoadd', PARAM_INT);
 $userid = $USER->id;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
 
+// Garanta que esta linha exista antes do try:
+global $DB;
 
-local_trustymatchmaker_add_friend($userid, $friendtoadd);
+try {
+    // 1. Verifica se já são amigos
+    if (\core_message\api::is_contact($userid, $friendtoadd)) {
+        echo json_encode([
+            'status' => 'already_friends', 
+            'message' => 'Você e este colaborador já são amigos!'
+        ]);
+        exit;
+    }
+
+    // 2. Verifica se JÁ EXISTE um convite pendente (ida ou volta)
+    $convite_enviado = $DB->record_exists('message_contact_requests', ['userid' => $userid, 'requesteduserid' => $friendtoadd]);
+    $convite_recebido = $DB->record_exists('message_contact_requests', ['userid' => $friendtoadd, 'requesteduserid' => $userid]);
+
+    if ($convite_enviado || $convite_recebido) {
+        echo json_encode([
+            'status' => 'pending_request', 
+            'message' => 'Já existe um convite de contato pendente entre vocês!'
+        ]);
+        exit; // Para a execução aqui
+    }
+
+    // 3. Se passou pelas duas travas, prossegue com a sua função
+    local_trustymatchmaker_add_friend($userid, $friendtoadd);
+    
+    echo json_encode(['status' => 'success']);
+    
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+}

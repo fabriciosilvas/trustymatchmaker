@@ -20,8 +20,8 @@ define(['jquery', 'core/config'], function($, cfg) {
                 $('#btn-confirm-medal')
                     .prop('disabled', true)
                     .addClass('disabled')
-                    .removeData('medalids')
-                    .text('Selecione 2 medalhas'); 
+                    .removeData('medalid') // Limpa o ID antigo
+                    .text('Selecione uma medalha'); 
             }
             
             $('#' + modalId).addClass('is-visible'); 
@@ -33,43 +33,35 @@ define(['jquery', 'core/config'], function($, cfg) {
             $(this).closest('.medal-popup-overlay').removeClass('is-visible');
         });
 
-        // 3. Selecionar medalhas
+        // 3. Selecionar medalha (Comportamento de "Radio Button")
         $(document).on('click', '.medal-selectable', function(e) {
             e.preventDefault();
             
             var $btn = $('#btn-confirm-medal');
+            var $caixaClicada = $(this);
             
-            $(this).toggleClass('selected-medal-item');
-            
-            var medalIds = [];
-            $('.selected-medal-item').each(function() {
-                medalIds.push($(this).data('medalid'));
-            });
-            
-            var count = medalIds.length;
-
-            if (count > 2) {
-                $(this).removeClass('selected-medal-item');
-                alert("Você só pode selecionar até 2 medalhas.");
-                return;
-            }
-            
-            if (count === 0) {
-                $btn.prop('disabled', true).addClass('disabled').text('Selecione até 2 medalhas');
-            } else if (count === 1) {
+            // Se ele clicou na que já estava selecionada, ele quer desmarcar
+            if ($caixaClicada.hasClass('selected-medal-item')) {
+                $caixaClicada.removeClass('selected-medal-item');
+                $btn.prop('disabled', true).addClass('disabled').text('Selecione uma medalha').removeData('medalid');
+            } 
+            // Se clicou em uma nova, seleciona só ela
+            else {
+                // Remove a marcação de todas as outras caixas
+                $('.medal-selectable').removeClass('selected-medal-item');
+                // Adiciona a marcação apenas na que ele clicou
+                $caixaClicada.addClass('selected-medal-item');
+                
+                var medalId = $caixaClicada.data('medalid');
+                
                 $btn.prop('disabled', false)
                     .removeClass('disabled')
-                    .data('medalids', medalIds)
-                    .text('Presentear uma medalha');
-            } else if (count === 2) {
-                $btn.prop('disabled', false)
-                    .removeClass('disabled')
-                    .data('medalids', medalIds)
-                    .text('Presentear duas medalhas');
+                    .data('medalid', medalId)
+                    .text('Presentear medalha');
             }
         });
         
-        // 4. PHP
+        // 4. Buscar e enviar no PHP
         $(document).on('click', '#btn-confirm-medal', function(e) {
             e.preventDefault();
             
@@ -77,7 +69,7 @@ define(['jquery', 'core/config'], function($, cfg) {
             
             var $btn = $(this);
             var receiverId = $btn.data('receiverid');
-            var medalIds = $btn.data('medalids');
+            var medalId = $btn.data('medalid'); // Agora é singular
             var $modal = $btn.closest('.medal-popup-overlay');
 
             $btn.prop('disabled', true).addClass('disabled').text('Enviando...');
@@ -88,7 +80,7 @@ define(['jquery', 'core/config'], function($, cfg) {
                 dataType: 'json',
                 data: {
                     receiverid: receiverId,
-                    medalids: medalIds
+                    medalid: medalId // Passando o ID único
                 },
                 success: function(response) {
                     if (response.status === 'success') {
@@ -97,16 +89,12 @@ define(['jquery', 'core/config'], function($, cfg) {
                         location.reload(); 
                     } else {
                         alert('Erro: ' + response.message);
-                        var count = $('.selected-medal-item').length;
-                        var textoCorreto = (count === 1) ? 'Presentear (1 medalha)' : 'Presentear (2 medalhas)';
-                        $btn.prop('disabled', false).removeClass('disabled').text(textoCorreto);
+                        $btn.prop('disabled', false).removeClass('disabled').text('Presentear medalha');
                     }
                 },
                 error: function() {
                     alert('Ocorreu um erro de comunicação com o servidor.');
-                    var count = $('.selected-medal-item').length;
-                    var textoCorreto = (count === 1) ? 'Presentear (1 medalha)' : 'Presentear (2 medalhas)';
-                    $btn.prop('disabled', false).removeClass('disabled').text(textoCorreto);
+                    $btn.prop('disabled', false).removeClass('disabled').text('Presentear medalha');
                 }
             });
         });

@@ -139,7 +139,9 @@ define(['jquery', 'core/config'], function($, cfg) {
                                 html += '  </div>';
                                 html += '  <div class="d-flex gap-2 ms-auto">';
                                 html += '    <button class="btn btn-sm btn-outline-primary" style="margin-right: 10px; title="Colaborar"><i class="fa-solid fa-handshake"></i></button>';
-                                html += '    <button class="btn btn-sm btn-outline-primary" title="Adicionar à lista de amigos"><i class="fa-solid fa-user-plus"></i></button>';
+                                html += '    <button class="btn btn-sm btn-outline-primary btn-add-friend" data-userid="' + user.id + '" title="Adicionar à lista de contatos">';
+                                html += '      <i class="fa-solid fa-user-plus"></i>';
+                                html += '    </button>';                               
                                 html += '  </div>';
                                 html += '</div>';
                             });
@@ -154,6 +156,73 @@ define(['jquery', 'core/config'], function($, cfg) {
                 error: function() {
                     alert('Erro de comunicação com o servidor.');
                     $btn.html(btnOriginalText).prop('disabled', false).removeClass('disabled');
+                }
+            });
+        });
+
+        // 6. MOSTRAR MAIS / MOSTRAR MENOS
+        $(document).off('click', '.btn-toggle-attributes');
+        $(document).on('click', '.btn-toggle-attributes', function(e) {
+            e.preventDefault();
+            
+            var $btn = $(this);
+            var targetId = $btn.data('target'); // Pega o ID da lista (Ex: #lista-capacidade)
+            var $container = $(targetId);
+            
+            // Alterna a classe que mostra os itens escondidos
+            $container.toggleClass('show-extras');
+            
+            // Troca o texto e o ícone da setinha
+            if ($container.hasClass('show-extras')) {
+                $btn.html('Mostrar menos <i class="fa-solid fa-chevron-up ms-1"></i>');
+            } else {
+                $btn.html('Mostrar mais <i class="fa-solid fa-chevron-down ms-1"></i>');
+            }
+        });
+
+        // 7. ADICIONAR AMIGO (CONTATO NO MOODLE)
+        $(document).off('click', '.btn-add-friend');
+        $(document).on('click', '.btn-add-friend', function(e) {
+            e.preventDefault();
+            
+            var $btn = $(this);
+            var userId = $btn.data('userid'); // Pega o ID da pessoa na tela
+            var originalHtml = $btn.html(); 
+
+            // Efeito de carregamento e trava do botão
+            $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i>');
+
+            $.ajax({
+                url: cfg.wwwroot + '/local/trustymatchmaker/addfriend.php', 
+                type: 'POST',
+                dataType: 'json',
+                data: { friendtoadd: userId }, 
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $btn.removeClass('btn-outline-primary').addClass('btn-success');
+                        $btn.html('<i class="fa-solid fa-check"></i>');
+                        $btn.attr('title', 'Adicionado com sucesso!');
+                        
+                    } else if (response.status === 'already_friends') {
+                        alert(response.message);
+                        
+                        $btn.removeClass('btn-outline-primary').addClass('btn-info text-white');
+                        $btn.html('<i class="fa-solid fa-user-check"></i>');
+                        $btn.attr('title', 'Vocês já são contatos');
+                        
+                    } else if (response.status === 'already_friends') {
+                        alert(response.message);
+                        $btn.removeClass('btn-outline-primary').addClass('btn-info text-white');
+                        $btn.html('<i class="fa-solid fa-user-check"></i>');
+                        $btn.attr('title', 'Vocês já são contatos');
+                    }else {
+                        alert('Erro: ' + response.message);
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                },
+                error: function() {
+                    alert('Erro de comunicação com o servidor.');
+                    $btn.prop('disabled', false).html(originalHtml);
                 }
             });
         });
