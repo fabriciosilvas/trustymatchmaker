@@ -114,6 +114,10 @@ if (is_array($lista)) {
 }
 */
 
+local_trustymatchmaker_load_recommendation_modal();
 
+
+$PAGE->requires->js_call_amd('local_trustymatchmaker/recommendations', 'init');
+$PAGE->requires->js_call_amd('local_trustymatchmaker/medals', 'init');
 
 echo $OUTPUT->footer();
