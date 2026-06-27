@@ -130,12 +130,18 @@ define(['jquery', 'core/config'], function($, cfg) {
                         if (response.data.length === 0) {
                             html = '<div class="alert alert-warning text-center">Nenhum colaborador encontrado com estes critérios.</div>';
                         } else {
+                            var getScoreLabel = function(score) {
+                                if (score >= 0.75) return { text: 'Altamente recomendado', css: 'text-success', icon: 'fa-star' };
+                                if (score >= 0.5)  return { text: 'Recomendado',           css: 'text-primary', icon: 'fa-check-double' };
+                                return                     { text: 'Pouco recomendado',     css: 'text-danger',  icon: 'fa-circle-info' };
+                            };
                             response.data.forEach(function(user) {
+                                var badge = getScoreLabel(user.score);
                                 html += '<div class="d-flex align-items-center p-3 mb-2" style="border: 1px solid #dee2e6; border-radius: 8px; background-color: #f8f9fa;">';
                                 html += '  <img src="' + user.profileimageurl + '" alt="Foto" class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;">';
                                 html += '  <div>';
                                 html += '    <h5 class="mb-0" style="color: #495057;">' + user.fullname + '</h5>';
-                                html += '    <small class="text-success"><i class="fa-solid fa-check-double"></i> Alto índice de eficiência, alta afinidade</small>';
+                                html += '    <small class="' + badge.css + '"><i class="fa-solid ' + badge.icon + '"></i> ' + badge.text + '</small>';
                                 html += '  </div>';
                                 html += '  <div class="d-flex gap-2 ms-auto">';
                                 html += '    <button class="btn btn-sm btn-outline-primary" style="margin-right: 10px; title="Colaborar"><i class="fa-solid fa-handshake"></i></button>';
