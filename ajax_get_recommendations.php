@@ -13,19 +13,41 @@ try {
 
 // Map UI slug → DB score_types name
 $CRITERIA_TO_ATTR = [
-    'lideranca'     => 'Liderança',
-    'dedicacao'     => 'Dedicação',
-    'eficiencia'    => 'Eficiência',
-    'proatividade'  => 'Proatividade',
-    'generosidade'  => 'Generosidade',
-    'etica'         => 'Ética',
-    'comportamento' => 'Comportamento',
+    // Capacidade
+    'assiduidade'        => 'Assiduidade',
+    'alto_conhecimento'  => 'Alto conhecimento em um tópico',
+    'boa_comunicacao'    => 'Boa comunicação',
+    'comprometimento'    => 'Comprometimento',
+    'cooperacao'         => 'Cooperação',
+    'cumprimento_prazos' => 'Cumprimento de prazos e compromissos',
+    'dedicacao'          => 'Dedicação',
+    'disponibilidade'    => 'Disponibilidade',
+    'eficiencia'         => 'Eficiência',
+    'feedback'           => 'Feedback',
+    'foco'               => 'Foco',
+    'lideranca'          => 'Liderança',
+    'pontualidade'       => 'Pontualidade',
+    'proatividade'       => 'Proatividade',
+    // Integridade
+    'generosidade'       => 'Generosidade',
+    'etica'              => 'Ética',
+    'comportamento'      => 'Comportamento',
 ];
 
 $raw_criteria = optional_param_array('criteria', [], PARAM_ALPHANUMEXT);
 $prioritized_attributes = array_values(array_filter(
     array_map(fn($s) => $CRITERIA_TO_ATTR[$s] ?? null, $raw_criteria)
 ));
+
+// Log the trust attributes selected by the user and forwarded to the recommender.
+$debug_log = $CFG->dataroot . '/recommender_debug.log';
+file_put_contents(
+    $debug_log,
+    "=== " . date('Y-m-d H:i:s') . " ===\n" .
+    "ATRIBUTOS SELECIONADOS (slugs): " . json_encode($raw_criteria, JSON_UNESCAPED_UNICODE) . "\n" .
+    "ATRIBUTOS ENVIADOS AO RECOMENDADOR: " . json_encode($prioritized_attributes, JSON_UNESCAPED_UNICODE) . "\n",
+    FILE_APPEND
+);
 
 // Q-A: Trustor basic info
 $trustor_row = $DB->get_record('user',
@@ -185,8 +207,7 @@ $python_payload = json_encode([
 ]);
 
 // Debug log
-$debug_log = $CFG->dataroot . '/recommender_debug.log';
-file_put_contents($debug_log, "=== " . date('Y-m-d H:i:s') . " ===\nREQUEST:\n" . json_encode(json_decode($python_payload), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
+file_put_contents($debug_log, "REQUEST:\n" . json_encode(json_decode($python_payload), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
 
 // Call Python recommender microservice
 $ch = curl_init('http://recommender:5000/recommend');
